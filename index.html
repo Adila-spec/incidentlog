@@ -3,813 +3,424 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Incident Log — Pattern Recognition Tool</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<title>SQL Practice Hub</title>
+
 <style>
-  :root {
-    --bg: #0d0d0f;
-    --surface: #141417;
-    --surface2: #1c1c21;
-    --border: #2a2a32;
-    --accent: #c8a96e;
-    --accent2: #7eb8c8;
-    --danger: #c87e7e;
-    --safe: #7ec89a;
-    --text: #e8e6e0;
-    --muted: #6e6e7a;
-    --tag-bg: #1e1e26;
-  }
+:root{
+    --bg:#0f172a;
+    --card:#1e293b;
+    --accent:#38bdf8;
+    --text:#f8fafc;
+    --muted:#94a3b8;
+    --success:#22c55e;
+}
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'DM Mono', monospace;
-    font-weight: 300;
-    min-height: 100vh;
-    padding: 2rem 1rem;
-  }
+body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:Arial,Helvetica,sans-serif;
+    padding:30px;
+}
 
-  .grain {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    opacity: 0.03;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-    background-size: 128px;
-  }
+.container{
+    max-width:1200px;
+    margin:auto;
+}
 
-  .container {
-    max-width: 720px;
-    margin: 0 auto;
-  }
+h1{
+    text-align:center;
+    margin-bottom:20px;
+    color:var(--accent);
+}
 
-  header {
-    margin-bottom: 3rem;
-    border-bottom: 1px solid var(--border);
-    padding-bottom: 2rem;
-  }
+.card{
+    background:var(--card);
+    padding:20px;
+    border-radius:12px;
+    margin-bottom:20px;
+}
 
-  .eyebrow {
-    font-size: 0.65rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 0.75rem;
-  }
+h2{
+    margin-bottom:10px;
+    color:var(--accent);
+}
 
-  h1 {
-    font-family: 'DM Serif Display', serif;
-    font-size: clamp(1.8rem, 4vw, 2.8rem);
-    line-height: 1.1;
-    color: var(--text);
-    margin-bottom: 0.75rem;
-  }
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:10px;
+}
 
-  h1 em {
-    font-style: italic;
-    color: var(--accent);
-  }
+th,td{
+    border:1px solid #334155;
+    padding:8px;
+    text-align:left;
+}
 
-  .subtitle {
-    font-size: 0.75rem;
-    color: var(--muted);
-    line-height: 1.6;
-  }
+th{
+    background:#0f172a;
+}
 
-  /* STEP INDICATOR */
-  .steps {
-    display: flex;
-    gap: 0;
-    margin-bottom: 2.5rem;
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    overflow: hidden;
-  }
+button{
+    background:var(--accent);
+    color:black;
+    border:none;
+    padding:10px 16px;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:bold;
+}
 
-  .step {
-    flex: 1;
-    padding: 0.6rem 0.5rem;
-    text-align: center;
-    font-size: 0.6rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--muted);
-    background: var(--surface);
-    border-right: 1px solid var(--border);
-    transition: all 0.3s;
-  }
+button:hover{
+    opacity:.9;
+}
 
-  .step:last-child { border-right: none; }
-  .step.active { background: var(--accent); color: #0d0d0f; font-weight: 500; }
-  .step.done { color: var(--accent); }
+.filters{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-bottom:20px;
+}
 
-  /* CARDS */
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 1.5rem;
-    margin-bottom: 1.25rem;
-    display: none;
-    animation: fadeUp 0.3s ease;
-  }
+.filter-btn{
+    background:#334155;
+    color:white;
+}
 
-  .card.active { display: block; }
+.filter-btn.active{
+    background:var(--accent);
+    color:black;
+}
 
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
+.question{
+    font-size:1.2rem;
+    margin-bottom:15px;
+}
 
-  .card-label {
-    font-size: 0.6rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 1rem;
-  }
+.answer{
+    display:none;
+    background:#0f172a;
+    padding:15px;
+    border-radius:8px;
+    margin-top:15px;
+    white-space:pre-wrap;
+}
 
-  .card-title {
-    font-family: 'DM Serif Display', serif;
-    font-size: 1.2rem;
-    margin-bottom: 1.25rem;
-    color: var(--text);
-  }
+.hint{
+    color:#facc15;
+    margin-top:10px;
+}
 
-  /* INPUTS */
-  label {
-    display: block;
-    font-size: 0.65rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 0.4rem;
-  }
+.controls{
+    display:flex;
+    gap:10px;
+    margin-top:20px;
+}
 
-  select, textarea, input[type="text"] {
-    width: 100%;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    color: var(--text);
-    font-family: 'DM Mono', monospace;
-    font-size: 0.8rem;
-    padding: 0.65rem 0.75rem;
-    margin-bottom: 1rem;
-    outline: none;
-    transition: border-color 0.2s;
-    -webkit-appearance: none;
-  }
+.counter{
+    color:var(--muted);
+    margin-bottom:10px;
+}
 
-  select:focus, textarea:focus, input[type="text"]:focus {
-    border-color: var(--accent);
-  }
+pre{
+    overflow:auto;
+}
 
-  textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
-
-  /* GRID OF OPTIONS */
-  .options-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.6rem;
-    margin-bottom: 1rem;
-  }
-
-  .option-btn {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    color: var(--text);
-    font-family: 'DM Mono', monospace;
-    font-size: 0.7rem;
-    padding: 0.6rem 0.75rem;
-    cursor: pointer;
-    text-align: left;
-    transition: all 0.2s;
-    line-height: 1.4;
-  }
-
-  .option-btn:hover { border-color: var(--accent); color: var(--accent); }
-  .option-btn.selected { border-color: var(--accent); background: rgba(200,169,110,0.08); color: var(--accent); }
-
-  /* BUTTONS */
-  .btn {
-    background: var(--accent);
-    border: none;
-    border-radius: 4px;
-    color: #0d0d0f;
-    font-family: 'DM Mono', monospace;
-    font-size: 0.7rem;
-    font-weight: 500;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    padding: 0.75rem 1.5rem;
-    cursor: pointer;
-    transition: opacity 0.2s;
-    width: 100%;
-    margin-top: 0.5rem;
-  }
-
-  .btn:hover { opacity: 0.85; }
-  .btn.secondary {
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--muted);
-    margin-top: 0.5rem;
-  }
-
-  /* RESULT CARD */
-  .result-section {
-    margin-bottom: 1.5rem;
-  }
-
-  .result-section-title {
-    font-size: 0.6rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 0.6rem;
-    padding-bottom: 0.4rem;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .aggressor-tag {
-    display: inline-block;
-    background: rgba(200,126,126,0.12);
-    border: 1px solid var(--danger);
-    color: var(--danger);
-    font-size: 0.7rem;
-    padding: 0.3rem 0.75rem;
-    border-radius: 3px;
-    margin-bottom: 0.75rem;
-    letter-spacing: 0.05em;
-  }
-
-  .pattern-tag {
-    display: inline-block;
-    background: var(--tag-bg);
-    border: 1px solid var(--border);
-    color: var(--accent2);
-    font-size: 0.65rem;
-    padding: 0.25rem 0.6rem;
-    border-radius: 3px;
-    margin: 0.2rem 0.2rem 0.2rem 0;
-  }
-
-  .coping-box {
-    background: var(--surface2);
-    border-left: 2px solid var(--accent);
-    padding: 0.85rem 1rem;
-    border-radius: 0 4px 4px 0;
-    margin-bottom: 0.6rem;
-    font-size: 0.78rem;
-    line-height: 1.6;
-    color: var(--text);
-  }
-
-  .coping-box.future {
-    border-left-color: var(--safe);
-  }
-
-  .phase-label {
-    font-size: 0.58rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    margin-bottom: 0.35rem;
-  }
-
-  .phase-label.now { color: var(--accent); }
-  .phase-label.future { color: var(--safe); }
-
-  /* LOG */
-  .log-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.25rem;
-  }
-
-  .log-count {
-    font-size: 0.65rem;
-    color: var(--muted);
-    letter-spacing: 0.1em;
-  }
-
-  .log-entry {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 1rem 1.25rem;
-    margin-bottom: 0.75rem;
-    position: relative;
-  }
-
-  .log-entry-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 0.5rem;
-    gap: 1rem;
-  }
-
-  .log-person {
-    font-family: 'DM Serif Display', serif;
-    font-size: 1rem;
-    color: var(--danger);
-  }
-
-  .log-date {
-    font-size: 0.6rem;
-    color: var(--muted);
-    white-space: nowrap;
-  }
-
-  .log-desc {
-    font-size: 0.72rem;
-    color: var(--muted);
-    line-height: 1.5;
-    margin-bottom: 0.5rem;
-  }
-
-  .delete-btn {
-    position: absolute;
-    top: 0.75rem;
-    right: 0.75rem;
-    background: none;
-    border: none;
-    color: var(--muted);
-    cursor: pointer;
-    font-size: 0.8rem;
-    padding: 0.2rem;
-    line-height: 1;
-    transition: color 0.2s;
-  }
-  .delete-btn:hover { color: var(--danger); }
-
-  .empty-log {
-    text-align: center;
-    color: var(--muted);
-    font-size: 0.72rem;
-    padding: 2rem;
-    border: 1px dashed var(--border);
-    border-radius: 4px;
-  }
-
-  /* NAV TABS */
-  .tabs {
-    display: flex;
-    gap: 0;
-    margin-bottom: 2rem;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .tab {
-    padding: 0.6rem 1.25rem;
-    font-size: 0.65rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--muted);
-    cursor: pointer;
-    border-bottom: 2px solid transparent;
-    margin-bottom: -1px;
-    transition: all 0.2s;
-    background: none;
-    border-top: none;
-    border-left: none;
-    border-right: none;
-    font-family: 'DM Mono', monospace;
-  }
-
-  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
-  .tab:hover:not(.active) { color: var(--text); }
-
-  .tab-content { display: none; }
-  .tab-content.active { display: block; }
-
-  .separator { border: none; border-top: 1px solid var(--border); margin: 1.25rem 0; }
-
-  .insight-row {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 0.6rem;
-    font-size: 0.72rem;
-    line-height: 1.5;
-  }
-
-  .insight-key {
-    color: var(--muted);
-    min-width: 100px;
-    font-size: 0.65rem;
-    letter-spacing: 0.05em;
-    padding-top: 0.05rem;
-  }
-
-  .insight-val { color: var(--text); }
+.code{
+    background:#020617;
+    padding:12px;
+    border-radius:8px;
+}
 </style>
 </head>
+
 <body>
-<div class="grain"></div>
+
 <div class="container">
 
-  <header>
-    <div class="eyebrow">Private — Pattern Recognition System</div>
-    <h1>Incident <em>Log</em></h1>
-    <p class="subtitle">Document what happened. Identify who. Understand the pattern. Find your footing.</p>
-  </header>
+<h1>SQL Practice Hub</h1>
 
-  <div class="tabs">
-    <button class="tab active" onclick="switchTab('log-tab', this)">Log Incident</button>
-    <button class="tab" onclick="switchTab('history-tab', this)">History</button>
-    <button class="tab" onclick="switchTab('patterns-tab', this)">Pattern Map</button>
-  </div>
+<div class="card">
+<h2>SQL Quick Reference</h2>
 
-  <!-- LOG INCIDENT TAB -->
-  <div id="log-tab" class="tab-content active">
+<ul style="line-height:1.8">
+<li><strong>SELECT</strong> → retrieve data</li>
+<li><strong>WHERE</strong> → filter rows</li>
+<li><strong>GROUP BY</strong> → aggregate data</li>
+<li><strong>HAVING</strong> → filter groups</li>
+<li><strong>JOIN</strong> → combine tables</li>
+<li><strong>CTE</strong> → reusable query blocks</li>
+<li><strong>Window Functions</strong> → ranking & running totals</li>
+</ul>
+</div>
 
-    <div class="steps">
-      <div class="step active" id="step1-ind">01 Who</div>
-      <div class="step" id="step2-ind">02 What</div>
-      <div class="step" id="step3-ind">03 Context</div>
-      <div class="step" id="step4-ind">04 Guidance</div>
-    </div>
+<div class="card">
+<h2>Employees Table</h2>
 
-    <!-- STEP 1: WHO -->
-    <div class="card active" id="step1">
-      <div class="card-label">Step 01</div>
-      <div class="card-title">Who initiated the incident?</div>
-      <div class="options-grid">
-        <button class="option-btn" onclick="selectPerson('Mom', this)">Mom<br><span style="color:var(--muted);font-size:0.6rem">Verbal abuse · Financial control</span></button>
-        <button class="option-btn" onclick="selectPerson('Brother', this)">Brother<br><span style="color:var(--muted);font-size:0.6rem">Coercion · Physical/verbal abuse</span></button>
-        <button class="option-btn" onclick="selectPerson('Sister (older)', this)">Sister — Older<br><span style="color:var(--muted);font-size:0.6rem">Contempt · Public humiliation</span></button>
-        <button class="option-btn" onclick="selectPerson('Sister (younger)', this)">Sister — Younger<br><span style="color:var(--muted);font-size:0.6rem">Volatile · Physical risk</span></button>
-        <button class="option-btn" onclick="selectPerson('Dad', this)">Dad<br><span style="color:var(--muted);font-size:0.6rem">Absent · Transactional</span></button>
-        <button class="option-btn" onclick="selectPerson("Brother's Kids", this)">Brother's Kids<br><span style="color:var(--muted);font-size:0.6rem">Inherited entitlement</span></button>
-        <button class="option-btn" onclick="selectPerson("Sister's Household", this)">Sister's Household<br><span style="color:var(--muted);font-size:0.6rem">Recruited contempt</span></button>
-        <button class="option-btn" onclick="selectPerson('Male Relatives', this)">Male Relatives<br><span style="color:var(--muted);font-size:0.6rem">Career sabotage</span></button>
-        <button class="option-btn" onclick="selectPerson('Female Cousins (via Mom)', this)">Female Cousins<br><span style="color:var(--muted);font-size:0.6rem">Mom's interference</span></button>
-        <button class="option-btn" onclick="selectPerson('Multiple / Group', this)">Multiple / Group<br><span style="color:var(--muted);font-size:0.6rem">Coalition dynamic</span></button>
-      </div>
-      <button class="btn" onclick="goToStep(2)" id="next1" style="display:none">Continue →</button>
-    </div>
+<table>
+<thead>
+<tr>
+<th>emp_id</th>
+<th>name</th>
+<th>dept</th>
+<th>salary</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>1</td><td>Alice</td><td>Finance</td><td>95000</td></tr>
+<tr><td>2</td><td>Bob</td><td>IT</td><td>87000</td></tr>
+<tr><td>3</td><td>Carol</td><td>Finance</td><td>110000</td></tr>
+<tr><td>4</td><td>David</td><td>HR</td><td>72000</td></tr>
+</tbody>
+</table>
+</div>
 
-    <!-- STEP 2: WHAT -->
-    <div class="card" id="step2">
-      <div class="card-label">Step 02</div>
-      <div class="card-title">What type of behavior occurred?</div>
-      <div class="options-grid">
-        <button class="option-btn" onclick="selectBehavior('Verbal abuse / screaming', this)">Verbal abuse<br><span style="color:var(--muted);font-size:0.6rem">Screaming, insults, threats</span></button>
-        <button class="option-btn" onclick="selectBehavior('Public humiliation', this)">Public humiliation<br><span style="color:var(--muted);font-size:0.6rem">Audience present</span></button>
-        <button class="option-btn" onclick="selectBehavior('Gaslighting', this)">Gaslighting<br><span style="color:var(--muted);font-size:0.6rem">Denying your reality</span></button>
-        <button class="option-btn" onclick="selectBehavior('Financial pressure / coercion', this)">Financial coercion<br><span style="color:var(--muted);font-size:0.6rem">Money demands, guilt</span></button>
-        <button class="option-btn" onclick="selectBehavior('Social isolation attempt', this)">Social isolation<br><span style="color:var(--muted);font-size:0.6rem">Cutting off your connections</span></button>
-        <button class="option-btn" onclick="selectBehavior('Career / achievement diminishment', this)">Career attack<br><span style="color:var(--muted);font-size:0.6rem">Undermining your work</span></button>
-        <button class="option-btn" onclick="selectBehavior('Physical intimidation', this)">Physical intimidation<br><span style="color:var(--muted);font-size:0.6rem">Invasion of space, threats</span></button>
-        <button class="option-btn" onclick="selectBehavior('Silent treatment / abandonment', this)">Silent treatment<br><span style="color:var(--muted);font-size:0.6rem">Withholding, ignoring</span></button>
-        <button class="option-btn" onclick="selectBehavior('False accusation', this)">False accusation<br><span style="color:var(--muted);font-size:0.6rem">Blamed for their actions</span></button>
-        <button class="option-btn" onclick="selectBehavior('Double bind', this)">Double bind<br><span style="color:var(--muted);font-size:0.6rem">No right answer exists</span></button>
-      </div>
-      <button class="btn secondary" onclick="goToStep(1)">← Back</button>
-      <button class="btn" onclick="goToStep(3)" id="next2" style="display:none">Continue →</button>
-    </div>
+<div class="card">
+<h2>Sales Table</h2>
 
-    <!-- STEP 3: CONTEXT -->
-    <div class="card" id="step3">
-      <div class="card-label">Step 03</div>
-      <div class="card-title">A little more context</div>
+<table>
+<thead>
+<tr>
+<th>sale_id</th>
+<th>employee_id</th>
+<th>amount</th>
+<th>sale_date</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>1</td><td>1</td><td>5000</td><td>2025-01-03</td></tr>
+<tr><td>2</td><td>1</td><td>7000</td><td>2025-01-05</td></tr>
+<tr><td>3</td><td>2</td><td>3000</td><td>2025-01-08</td></tr>
+<tr><td>4</td><td>3</td><td>12000</td><td>2025-01-10</td></tr>
+</tbody>
+</table>
+</div>
 
-      <label>Where did this happen?</label>
-      <div class="options-grid">
-        <button class="option-btn" onclick="selectSetting('Brother\'s house', this)">Brother's house</button>
-        <button class="option-btn" onclick="selectSetting('Family gathering', this)">Family gathering</button>
-        <button class="option-btn" onclick="selectSetting('Phone / text', this)">Phone / text</button>
-        <button class="option-btn" onclick="selectSetting('Public / other', this)">Public / other</button>
-      </div>
+<div class="card">
+<h2>Orders Table</h2>
 
-      <label>Your employment status right now</label>
-      <div class="options-grid">
-        <button class="option-btn" onclick="selectEmployment('searching', this)">Still job searching</button>
-        <button class="option-btn" onclick="selectEmployment('employed', this)">I have a job / income</button>
-      </div>
+<table>
+<thead>
+<tr>
+<th>order_id</th>
+<th>customer_id</th>
+<th>amount</th>
+<th>order_date</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>1</td><td>100</td><td>250</td><td>2025-02-01</td></tr>
+<tr><td>2</td><td>100</td><td>180</td><td>2025-02-04</td></tr>
+<tr><td>3</td><td>101</td><td>420</td><td>2025-02-07</td></tr>
+<tr><td>4</td><td>102</td><td>300</td><td>2025-02-10</td></tr>
+</tbody>
+</table>
+</div>
 
-      <label>Briefly describe what happened (optional)</label>
-      <textarea id="description" placeholder="Write as much or as little as you want..."></textarea>
+<div class="card">
 
-      <button class="btn secondary" onclick="goToStep(2)">← Back</button>
-      <button class="btn" onclick="generateGuidance()">Generate guidance →</button>
-    </div>
+<h2>Question Categories</h2>
 
-    <!-- STEP 4: RESULT -->
-    <div class="card" id="step4">
-      <div class="card-label">Step 04 — Your Guidance</div>
+<div class="filters" id="filters"></div>
 
-      <div class="result-section">
-        <div class="result-section-title">Predicted Aggressor Role</div>
-        <div id="aggressor-tag" class="aggressor-tag"></div>
-        <div id="pattern-tags"></div>
-      </div>
+<div class="counter" id="counter"></div>
 
-      <hr class="separator">
+<div class="question" id="question"></div>
 
-      <div class="result-section">
-        <div class="result-section-title">What Just Happened</div>
-        <div id="insight-text" style="font-size:0.78rem;line-height:1.7;color:var(--text)"></div>
-      </div>
+<div class="hint" id="hint"></div>
 
-      <hr class="separator">
+<div class="answer" id="answer"></div>
 
-      <div class="result-section">
-        <div class="result-section-title">How to Cope Right Now</div>
-        <div class="phase-label now">— While job searching / dependent</div>
-        <div id="coping-now" class="coping-box"></div>
-      </div>
+<div class="controls">
+<button onclick="prevQuestion()">Previous</button>
+<button onclick="toggleAnswer()">Show Answer</button>
+<button onclick="nextQuestion()">Next</button>
+</div>
 
-      <div class="result-section">
-        <div class="result-section-title">When You're Employed & Independent</div>
-        <div class="phase-label future">— Future gatherings with income + your own space</div>
-        <div id="coping-future" class="coping-box future"></div>
-      </div>
-
-      <hr class="separator">
-
-      <button class="btn" onclick="saveAndReset()">Save to Log & Start Over</button>
-      <button class="btn secondary" onclick="resetForm()">Start Over Without Saving</button>
-    </div>
-
-  </div>
-
-  <!-- HISTORY TAB -->
-  <div id="history-tab" class="tab-content">
-    <div class="log-header">
-      <div style="font-family:'DM Serif Display',serif;font-size:1.1rem">Incident History</div>
-      <div class="log-count" id="log-count">0 entries</div>
-    </div>
-    <div id="log-list"><div class="empty-log">No incidents logged yet. Use the Log tab to document what happens.</div></div>
-  </div>
-
-  <!-- PATTERN MAP TAB -->
-  <div id="patterns-tab" class="tab-content">
-    <div style="font-family:'DM Serif Display',serif;font-size:1.1rem;margin-bottom:1.5rem">Pattern Summary</div>
-    <div id="pattern-summary"><div class="empty-log">Log at least one incident to see pattern analysis.</div></div>
-  </div>
+</div>
 
 </div>
 
 <script>
-const state = {
-  person: null,
-  behavior: null,
-  setting: null,
-  employment: null,
-  step: 1
-};
 
-const log = JSON.parse(localStorage.getItem('incident_log') || '[]');
+const sqlQuestions = [
 
-// Person profiles
-const profiles = {
-  'Mom': {
-    role: 'Primary Abuser — Financial Controller',
-    patterns: ['Verbal abuse', 'Financial exploitation', 'Double bind', 'Manufactured dependency', 'Social isolation via triangulation'],
-    insight: 'Your mom uses a double bind as her primary mechanism: she creates dependency, then punishes you for it. Her goal is to remain central and keep you financially and emotionally tethered. The screaming and physical intimidation are escalation tools when she feels her control slipping.',
-    copingNow: 'Gray rock method: give her the least amount of emotional response possible. Short, neutral answers. Do not JADE (Justify, Argue, Defend, Explain). Her abuse escalates when she senses she\'s losing control — don\'t feed it. If she begins screaming, leave the room without arguing. You don\'t owe her an explanation for removing yourself.',
-    copingFuture: 'With your own income and space, your attendance at any gathering involving her is entirely optional. If you must attend, arrive with an exit plan (your own transportation, a time limit). Use the "broken record" technique for financial pressure — a calm, repeated "that\'s not something I can do" without elaboration. Your financial independence is your primary protection.'
-  },
-  'Brother': {
-    role: 'Enabler — Coercive Controller',
-    patterns: ['Financial coercion', 'Private verbal abuse', 'Physical abuse (historical)', 'Enabling Mom\'s dysfunction'],
-    insight: 'Your brother operates differently in public vs private. Publicly he may appear reasonable; privately he uses coercion and abuse. He purchased housing for your mom, creating a situation he then tried to transfer to you. His primary pattern is transferring his obligations onto you.',
-    copingNow: 'You are in his house — this is the most vulnerable position. Minimize time in shared spaces. Document any incidents. Begin exit planning as the primary priority. Do not agree to any financial arrangements verbally; if pressured, say "I\'ll think about it" and do not follow up.',
-    copingFuture: 'Once independent, you can engage with him strictly on your terms or not at all. If you attend gatherings where he\'s present, keep interactions transactional and brief. Never discuss your finances or plans with him.'
-  },
-  'Sister (older)': {
-    role: 'Coalition Manager — Contempt-Based Aggressor',
-    patterns: ['Public humiliation', 'Contempt', 'Gaslighting', 'Scapegoating', 'Social isolation', 'Financial hypocrisy'],
-    insight: 'Her contempt for you is calculated, not reactive. She uses public settings deliberately — an audience amplifies your humiliation and her power. She benefits materially from keeping you in the scapegoat role: as long as you\'re designated as responsible for your parents, her wealth is protected. Her "neutral party" framing is a manipulation tactic.',
-    copingNow: 'The only winning move is zero access. No family events where she\'ll be present if you can avoid them. If unavoidable, treat her like a stranger — polite, minimal, no emotional content. Do not defend yourself publicly; it feeds the dynamic. Your silence and calm demeanor is more powerful than any rebuttal.',
-    copingFuture: 'With independence, her humiliation tactics lose their fuel — she targets your financial and marital situation because those are vulnerabilities. As those stabilize, her ammunition disappears. You can legitimately decline any event she attends. If forced to be in the same space, the "gray rock" approach applies: brief, boring, emotionally flat responses.'
-  },
-  'Sister (younger)': {
-    role: 'Volatile Aggressor — Physical Risk',
-    patterns: ['Physical violence', 'Unpredictable volatility', 'Anxiety-driven aggression'],
-    insight: 'Her aggression is less calculated than your older sister\'s — it\'s reactive and driven by anxiety. This makes her less predictable and in some ways more physically dangerous. She has experienced some of the same family dysfunction but has not developed solidarity with you.',
-    copingNow: 'Physical safety first. Do not be alone with her. Know where exits are. If she escalates, leave — do not try to de-escalate verbally. You have already had to call police; that boundary is valid and can be maintained.',
-    copingFuture: 'Her presence at any gathering is a reason to either not attend or to have your own transportation and a clear exit. You are not obligated to manage her emotional state or absorb her aggression under any circumstances.'
-  },
-  'Dad': {
-    role: 'Transactional Abuser — Manufactured Dependency',
-    patterns: ['Absent then extractive', 'Financial exploitation', 'Career sabotage', 'Caregiver coercion', 'Double bind'],
-    insight: 'Your dad reappeared after a decade exclusively to extract from you. He sabotaged your employment to create dependency, then weaponized that dependency. His pattern mirrors your mom\'s double bind: drew you in, created conditions of need, then called you a burden for the need he manufactured.',
-    copingNow: 'Treat any re-engagement from him with extreme caution. His contact is transactional by pattern. You are not obligated to be his caregiver — that role was assigned without your consent after he sabotaged your ability to leave.',
-    copingFuture: 'Independence gives you the ability to simply not engage. If he reaches out, you can choose not to respond. If you do engage, keep it brief and never discuss your finances, living situation, or plans.'
-  },
-  "Brother's Kids": {
-    role: 'Inherited Entitlement',
-    patterns: ['Academic resentment', 'Gatekeeping family resources', 'Entitlement'],
-    insight: 'They have absorbed their father\'s value system. Their hostility toward your Ivy League admission reflects a hierarchy where wealth is the only valid credential. They\'re protecting a family narrative that positions you as less-than.',
-    copingNow: 'They are not worth emotional energy. Their opinion of you is irrelevant to your actual capabilities and future. Disengage from any comparison dynamics.',
-    copingFuture: 'As peers (all adults), you owe them nothing. Polite indifference is sufficient. Your success is the best response to their diminishment.'
-  },
-  "Sister's Household": {
-    role: 'Recruited Contempt — Proxy Aggressors',
-    patterns: ['Contempt by proxy', 'Coalition extension', 'Disrespect modeled by sister'],
-    insight: 'They are extensions of your older sister\'s dynamic. The disrespect is learned and encouraged, not organic.',
-    copingNow: 'Treat them the same as your sister: minimal engagement, no emotional content. They have no actual power over you.',
-    copingFuture: 'No obligation to maintain relationships with any of them. Polite distance is appropriate.'
-  },
-  'Male Relatives': {
-    role: 'Career Saboteurs',
-    patterns: ['Open discouragement', 'Reputation damage', 'Achievement diminishment'],
-    insight: 'Multiple male relatives doing the same thing is not coincidental — your financial independence threatens the system. An Ivy League education and career potential make you harder to exploit. Their diminishment is about protecting the dynamic, not about you.',
-    copingNow: 'Do not share career plans, job searches, or professional wins with anyone in this system. Information is ammunition. Keep your professional life completely private from family.',
-    copingFuture: 'Your career is yours. Their opinions are irrelevant. Once independent, limit or eliminate contact with anyone who has actively worked against your professional growth.'
-  },
-  'Female Cousins (via Mom)': {
-    role: 'Collateral — Mom\'s Interference',
-    patterns: ['Triangulation by Mom', 'Manufactured distance from peers'],
-    insight: 'Your mom is inserting herself between you and your female cousins specifically because lateral peer relationships would give you support and perspective outside her control. This is sophisticated isolation management.',
-    copingNow: 'If you have any direct access to cousins outside of family gatherings, pursue those connections quietly without routing through your mom.',
-    copingFuture: 'Once independent, you can rebuild lateral relationships directly. Your cousins may not even be aware of how they\'ve been triangulated against you.'
-  },
-  'Multiple / Group': {
-    role: 'Coalition Dynamic — Coordinated System',
-    patterns: ['Group scapegoating', 'Coordinated pressure', 'System-level abuse'],
-    insight: 'When multiple people act against you simultaneously, it is the system operating as designed. You have been assigned the scapegoat role. This is not about your individual failings — it is a function the family system requires someone to fill, and you were designated.',
-    copingNow: 'Do not try to address the group or defend yourself to multiple people at once. Exit the situation. You cannot win a group dynamic in the moment. Document afterward.',
-    copingFuture: 'Group gatherings are optional. Your attendance at any event where you will be outnumbered and targeted is a choice, not an obligation. Having your own transportation and a time limit is non-negotiable.'
-  }
-};
+{
+cat:"SELECT & Filter",
+q:"Select all employees in the Finance department earning more than $90,000.",
+hint:"WHERE dept='Finance' AND salary > 90000",
+a:`SELECT *
+FROM employees
+WHERE dept='Finance'
+AND salary > 90000;`
+},
 
-function selectPerson(person, btn) {
-  document.querySelectorAll('#step1 .option-btn').forEach(b => b.classList.remove('selected'));
-  btn.classList.add('selected');
-  state.person = person;
-  document.getElementById('next1').style.display = 'block';
+{
+cat:"Aggregations",
+q:"Find average salary by department.",
+hint:"GROUP BY department",
+a:`SELECT dept,
+AVG(salary) AS avg_salary
+FROM employees
+GROUP BY dept;`
+},
+
+{
+cat:"JOINs",
+q:"Show employee names and sales amounts.",
+hint:"Join employees and sales",
+a:`SELECT e.name,
+s.amount
+FROM employees e
+JOIN sales s
+ON e.emp_id = s.employee_id;`
+},
+
+{
+cat:"Window Functions",
+q:"Rank employees by salary.",
+hint:"Use RANK()",
+a:`SELECT name,
+salary,
+RANK() OVER(
+ORDER BY salary DESC
+) AS salary_rank
+FROM employees;`
 }
 
-function selectBehavior(behavior, btn) {
-  document.querySelectorAll('#step2 .option-btn').forEach(b => b.classList.remove('selected'));
-  btn.classList.add('selected');
-  state.behavior = behavior;
-  document.getElementById('next2').style.display = 'block';
+];
+
+/* paste all remaining questions here */
+
+let currentIndex = 0;
+let currentCategory = "All";
+
+function categories() {
+    return [
+        "All",
+        ...new Set(sqlQuestions.map(x => x.cat))
+    ];
 }
 
-function selectSetting(setting, btn) {
-  document.querySelectorAll('#step3 .options-grid:first-of-type .option-btn').forEach(b => b.classList.remove('selected'));
-  btn.classList.add('selected');
-  state.setting = setting;
+function filteredQuestions() {
+    if(currentCategory === "All")
+        return sqlQuestions;
+
+    return sqlQuestions.filter(
+        q => q.cat === currentCategory
+    );
 }
 
-function selectEmployment(emp, btn) {
-  document.querySelectorAll('#step3 .options-grid:last-of-type .option-btn').forEach(b => b.classList.remove('selected'));
-  btn.classList.add('selected');
-  state.employment = emp;
+function renderFilters() {
+
+    const container =
+        document.getElementById("filters");
+
+    container.innerHTML = "";
+
+    categories().forEach(cat => {
+
+        const btn =
+            document.createElement("button");
+
+        btn.className =
+            "filter-btn" +
+            (cat===currentCategory ? " active":"");
+
+        btn.innerText = cat;
+
+        btn.onclick = () => {
+            currentCategory = cat;
+            currentIndex = 0;
+            renderQuestion();
+            renderFilters();
+        };
+
+        container.appendChild(btn);
+    });
 }
 
-function goToStep(n) {
-  document.getElementById('step' + state.step).classList.remove('active');
-  document.getElementById('step' + n).classList.add('active');
-  ['step1-ind','step2-ind','step3-ind','step4-ind'].forEach((id, i) => {
-    const el = document.getElementById(id);
-    el.className = 'step';
-    if (i + 1 < n) el.classList.add('done');
-    if (i + 1 === n) el.classList.add('active');
-  });
-  state.step = n;
+function renderQuestion(){
+
+    const questions =
+        filteredQuestions();
+
+    if(!questions.length) return;
+
+    const q =
+        questions[currentIndex];
+
+    document.getElementById(
+        "counter"
+    ).innerText =
+        `${currentIndex+1} / ${questions.length}`;
+
+    document.getElementById(
+        "question"
+    ).innerText = q.q;
+
+    document.getElementById(
+        "hint"
+    ).innerText = q.hint;
+
+    document.getElementById(
+        "answer"
+    ).innerHTML =
+        `<div class="code"><pre>${q.a}</pre></div>`;
+
+    document.getElementById(
+        "answer"
+    ).style.display = "none";
 }
 
-function generateGuidance() {
-  if (!state.person) { alert('Please select who initiated the incident.'); return; }
+function toggleAnswer(){
 
-  const profile = profiles[state.person] || profiles['Multiple / Group'];
-  const emp = state.employment || 'searching';
+    const box =
+        document.getElementById(
+            "answer"
+        );
 
-  document.getElementById('aggressor-tag').textContent = state.person + ' — ' + profile.role;
-
-  const tagContainer = document.getElementById('pattern-tags');
-  tagContainer.innerHTML = profile.patterns.map(p => `<span class="pattern-tag">${p}</span>`).join('');
-  if (state.behavior) tagContainer.innerHTML += `<span class="pattern-tag" style="border-color:var(--accent2)">${state.behavior}</span>`;
-
-  document.getElementById('insight-text').textContent = profile.insight;
-  document.getElementById('coping-now').textContent = profile.copingNow;
-  document.getElementById('coping-future').textContent = profile.copingFuture;
-
-  goToStep(4);
+    box.style.display =
+        box.style.display === "block"
+        ? "none"
+        : "block";
 }
 
-function saveAndReset() {
-  const entry = {
-    id: Date.now(),
-    date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-    person: state.person,
-    behavior: state.behavior,
-    setting: state.setting,
-    description: document.getElementById('description').value,
-    employment: state.employment
-  };
-  log.unshift(entry);
-  localStorage.setItem('incident_log', JSON.stringify(log));
-  renderLog();
-  renderPatterns();
-  resetForm();
+function nextQuestion(){
+
+    const questions =
+        filteredQuestions();
+
+    currentIndex =
+        (currentIndex + 1)
+        % questions.length;
+
+    renderQuestion();
 }
 
-function resetForm() {
-  state.person = null;
-  state.behavior = null;
-  state.setting = null;
-  state.employment = null;
-  document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
-  document.getElementById('description').value = '';
-  document.getElementById('next1').style.display = 'none';
-  document.getElementById('next2').style.display = 'none';
-  goToStep(1);
+function prevQuestion(){
+
+    const questions =
+        filteredQuestions();
+
+    currentIndex =
+        (currentIndex - 1 +
+        questions.length)
+        % questions.length;
+
+    renderQuestion();
 }
 
-function deleteEntry(id) {
-  const idx = log.findIndex(e => e.id === id);
-  if (idx > -1) { log.splice(idx, 1); localStorage.setItem('incident_log', JSON.stringify(log)); }
-  renderLog();
-  renderPatterns();
-}
+renderFilters();
+renderQuestion();
 
-function renderLog() {
-  const container = document.getElementById('log-list');
-  document.getElementById('log-count').textContent = log.length + ' entr' + (log.length === 1 ? 'y' : 'ies');
-  if (!log.length) {
-    container.innerHTML = '<div class="empty-log">No incidents logged yet.</div>';
-    return;
-  }
-  container.innerHTML = log.map(e => `
-    <div class="log-entry">
-      <button class="delete-btn" onclick="deleteEntry(${e.id})">✕</button>
-      <div class="log-entry-top">
-        <div class="log-person">${e.person || '—'}</div>
-        <div class="log-date">${e.date}</div>
-      </div>
-      ${e.behavior ? `<div><span class="pattern-tag">${e.behavior}</span>${e.setting ? ` <span class="pattern-tag">${e.setting}</span>` : ''}</div>` : ''}
-      ${e.description ? `<div class="log-desc" style="margin-top:0.5rem">${e.description}</div>` : ''}
-    </div>
-  `).join('');
-}
-
-function renderPatterns() {
-  const container = document.getElementById('pattern-summary');
-  if (!log.length) {
-    container.innerHTML = '<div class="empty-log">Log at least one incident to see pattern analysis.</div>';
-    return;
-  }
-  const counts = {};
-  const behaviors = {};
-  log.forEach(e => {
-    if (e.person) counts[e.person] = (counts[e.person] || 0) + 1;
-    if (e.behavior) behaviors[e.behavior] = (behaviors[e.behavior] || 0) + 1;
-  });
-  const topPerson = Object.entries(counts).sort((a,b) => b[1]-a[1]);
-  const topBehavior = Object.entries(behaviors).sort((a,b) => b[1]-a[1]);
-
-  container.innerHTML = `
-    <div class="result-section">
-      <div class="result-section-title">Most Frequent Aggressors</div>
-      ${topPerson.map(([p, c]) => `
-        <div class="insight-row">
-          <div class="insight-key">${p}</div>
-          <div class="insight-val">${c} incident${c > 1 ? 's' : ''}</div>
-        </div>`).join('')}
-    </div>
-    <hr class="separator">
-    <div class="result-section">
-      <div class="result-section-title">Most Frequent Behavior Types</div>
-      ${topBehavior.map(([b, c]) => `
-        <div class="insight-row">
-          <div class="insight-key" style="min-width:160px">${b}</div>
-          <div class="insight-val">${c} time${c > 1 ? 's' : ''}</div>
-        </div>`).join('')}
-    </div>
-    <hr class="separator">
-    <div class="result-section">
-      <div class="result-section-title">What This Tells You</div>
-      <div style="font-size:0.75rem;line-height:1.7;color:var(--muted)">
-        Patterns across ${log.length} logged incident${log.length > 1 ? 's' : ''}. 
-        The most important signal is repetition — the same person, the same behavior, documented over time. 
-        This is your evidence that what you are experiencing is systematic, not random.
-      </div>
-    </div>
-  `;
-}
-
-function switchTab(tabId, btn) {
-  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.getElementById(tabId).classList.add('active');
-  btn.classList.add('active');
-  if (tabId === 'history-tab') renderLog();
-  if (tabId === 'patterns-tab') renderPatterns();
-}
-
-// Init
-renderLog();
 </script>
+
 </body>
 </html>
