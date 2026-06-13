@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SQL Interview Garden 🌸</title>
 
 <style>
@@ -34,7 +34,7 @@ body{
 }
 
 .container{
-  max-width:1000px;
+  max-width:900px;
   margin:auto;
 }
 
@@ -108,13 +108,19 @@ h1{
   background:#faf5ff;
 }
 
-.sql-box{
+/* ✅ REAL SQL EDITOR */
+textarea{
+  width:100%;
+  min-height:140px;
   background:#0f172a;
-  color:#fff;
+  color:white;
   padding:12px;
   border-radius:10px;
   margin-top:10px;
   font-family:monospace;
+  border:none;
+  outline:none;
+  resize:vertical;
 }
 
 .buttons{
@@ -152,6 +158,7 @@ button{
   padding:10px;
   border-radius:10px;
   background:#fafafa;
+  white-space:pre-wrap;
 }
 
 .footer-nav{
@@ -192,31 +199,24 @@ button{
 
   <div class="dataset" id="dataset"></div>
 
-  <div class="sql-box">
-    Write your answer here...
-    <br><br>
-    SELECT
-  </div>
+  <!-- ✅ REAL WRITABLE SQL BOX -->
+  <textarea id="sqlInput" placeholder="Write your SQL here..."></textarea>
 
   <div class="buttons">
-
     <button class="btn light" onclick="toggle('hint')">🌷 Hint</button>
     <button class="btn alt" onclick="toggle('thinking')">💭 How To Think</button>
     <button class="btn" onclick="toggle('answer')">✨ Reveal Answer</button>
     <button class="btn" onclick="next()">➡️ Next Question</button>
-
   </div>
 
   <div class="section" id="hint"></div>
   <div class="section" id="thinking"></div>
-
   <div class="section" id="answer"></div>
 
 </div>
 
 <div class="footer-nav">
   <button onclick="prev()">⬅ Previous</button>
-  <div></div>
   <button onclick="next()">Next ➡</button>
 </div>
 
@@ -237,37 +237,15 @@ dataset:`
 <tr><td>3</td><td>Finance</td><td>110000</td></tr>
 </table>
 `,
-hint:"Think about grouping employees by department.",
+hint:"Think GROUP BY department.",
 thinking:`
-1. We need one row per department
-2. That means GROUP BY
-3. We need total salary
-4. Use SUM()
+We need one row per department → GROUP BY  
+We are summing salaries → SUM()
 `,
 answer:`
 SELECT dept, SUM(salary)
 FROM employees
 GROUP BY dept;
-`
-},
-
-{
-level:"Beginner",
-q:"What is the average cost per patient visit?",
-dataset:`
-<table>
-<tr><th>visit_id</th><th>cost</th></tr>
-<tr><td>1</td><td>200</td></tr>
-<tr><td>2</td><td>450</td></tr>
-</table>
-`,
-hint:"Average means aggregation.",
-thinking:`
-Use AVG() over cost column.
-`,
-answer:`
-SELECT AVG(cost)
-FROM visits;
 `
 },
 
@@ -282,11 +260,10 @@ dataset:`
 <tr><td>3</td><td>approved</td></tr>
 </table>
 `,
-hint:"Count approved vs total claims.",
+hint:"Use conditional aggregation.",
 thinking:`
-1. COUNT approved claims
-2. Divide by total
-3. Multiply by 100
+Count approved claims / total claims
+Use CASE inside SUM
 `,
 answer:`
 SELECT 
@@ -309,9 +286,8 @@ dataset:`
 `,
 hint:"Think ranking per group.",
 thinking:`
-1. Partition by department
-2. Rank salaries descending
-3. Filter rank = 1
+Use RANK() OVER(PARTITION BY dept ORDER BY salary DESC)
+Then filter rank = 1
 `,
 answer:`
 SELECT *
@@ -337,7 +313,6 @@ function filtered(){
 function render(){
 
   const data = filtered();
-
   if(!data.length) return;
 
   const q = data[index % data.length];
