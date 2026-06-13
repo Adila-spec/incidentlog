@@ -1,141 +1,168 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SQL Practice Hub</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SQL Interview Garden 🌸</title>
 
 <style>
 :root{
-    --bg:#0f172a;
-    --card:#1e293b;
-    --accent:#38bdf8;
-    --text:#f8fafc;
-    --muted:#94a3b8;
-    --success:#22c55e;
+  --bg1:#ffe4ec;
+  --bg2:#e9d5ff;
+  --bg3:#fff1f2;
+
+  --card:#ffffff;
+  --text:#1f2937;
+  --muted:#6b7280;
+
+  --rose:#f43f5e;
+  --pink:#ec4899;
+  --purple:#a855f7;
 }
 
 *{
-    box-sizing:border-box;
-    margin:0;
-    padding:0;
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+  font-family:Arial, Helvetica, sans-serif;
 }
 
 body{
-    background:var(--bg);
-    color:var(--text);
-    font-family:Arial,Helvetica,sans-serif;
-    padding:30px;
+  background:linear-gradient(135deg,var(--bg1),var(--bg2),var(--bg3));
+  color:var(--text);
+  padding:30px;
 }
 
 .container{
-    max-width:1200px;
-    margin:auto;
+  max-width:1000px;
+  margin:auto;
+}
+
+.header{
+  text-align:center;
+  margin-bottom:10px;
 }
 
 h1{
-    text-align:center;
-    margin-bottom:20px;
-    color:var(--accent);
+  font-size:2.2rem;
+}
+
+.sub{
+  color:var(--muted);
+  margin-top:6px;
+}
+
+.progress{
+  text-align:center;
+  margin:15px 0 25px;
+  color:var(--muted);
 }
 
 .card{
-    background:var(--card);
-    padding:20px;
-    border-radius:12px;
-    margin-bottom:20px;
+  background:var(--card);
+  border-radius:16px;
+  padding:18px;
+  margin-bottom:18px;
+  box-shadow:0 10px 25px rgba(236,72,153,0.15);
 }
 
-h2{
-    margin-bottom:10px;
-    color:var(--accent);
+.tags{
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  margin-bottom:20px;
 }
 
-table{
-    width:100%;
-    border-collapse:collapse;
-    margin-top:10px;
+.tag{
+  padding:6px 12px;
+  border-radius:999px;
+  cursor:pointer;
+  border:1px solid #ddd;
+  background:white;
 }
 
-th,td{
-    border:1px solid #334155;
-    padding:8px;
-    text-align:left;
+.tag.active{
+  background:var(--rose);
+  color:white;
+  border:none;
 }
 
-th{
-    background:#0f172a;
+.problem{
+  font-size:1.15rem;
+  line-height:1.5;
+  margin-bottom:10px;
+}
+
+.dataset table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:0.9rem;
+}
+
+.dataset th, .dataset td{
+  border:1px solid #eee;
+  padding:6px;
+}
+
+.dataset th{
+  background:#faf5ff;
+}
+
+.sql-box{
+  background:#0f172a;
+  color:#fff;
+  padding:12px;
+  border-radius:10px;
+  margin-top:10px;
+  font-family:monospace;
+}
+
+.buttons{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-top:15px;
 }
 
 button{
-    background:var(--accent);
-    color:black;
-    border:none;
-    padding:10px 16px;
-    border-radius:8px;
-    cursor:pointer;
-    font-weight:bold;
+  border:none;
+  padding:10px 14px;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:bold;
 }
 
-button:hover{
-    opacity:.9;
+.btn{
+  background:var(--rose);
+  color:white;
 }
 
-.filters{
-    display:flex;
-    flex-wrap:wrap;
-    gap:8px;
-    margin-bottom:20px;
+.btn.alt{
+  background:var(--purple);
 }
 
-.filter-btn{
-    background:#334155;
-    color:white;
+.btn.light{
+  background:#f3f4f6;
+  color:#111;
 }
 
-.filter-btn.active{
-    background:var(--accent);
-    color:black;
+.section{
+  display:none;
+  margin-top:10px;
+  padding:10px;
+  border-radius:10px;
+  background:#fafafa;
 }
 
-.question{
-    font-size:1.2rem;
-    margin-bottom:15px;
+.footer-nav{
+  display:flex;
+  justify-content:space-between;
+  margin-top:20px;
 }
 
-.answer{
-    display:none;
-    background:#0f172a;
-    padding:15px;
-    border-radius:8px;
-    margin-top:15px;
-    white-space:pre-wrap;
-}
-
-.hint{
-    color:#facc15;
-    margin-top:10px;
-}
-
-.controls{
-    display:flex;
-    gap:10px;
-    margin-top:20px;
-}
-
-.counter{
-    color:var(--muted);
-    margin-bottom:10px;
-}
-
-pre{
-    overflow:auto;
-}
-
-.code{
-    background:#020617;
-    padding:12px;
-    border-radius:8px;
+.small{
+  color:var(--muted);
+  font-size:0.9rem;
 }
 </style>
 </head>
@@ -144,281 +171,229 @@ pre{
 
 <div class="container">
 
-<h1>SQL Practice Hub</h1>
-
-<div class="card">
-<h2>SQL Quick Reference</h2>
-
-<ul style="line-height:1.8">
-<li><strong>SELECT</strong> → retrieve data</li>
-<li><strong>WHERE</strong> → filter rows</li>
-<li><strong>GROUP BY</strong> → aggregate data</li>
-<li><strong>HAVING</strong> → filter groups</li>
-<li><strong>JOIN</strong> → combine tables</li>
-<li><strong>CTE</strong> → reusable query blocks</li>
-<li><strong>Window Functions</strong> → ranking & running totals</li>
-</ul>
+<div class="header">
+  <h1>🌸 SQL Interview Garden 🌸</h1>
+  <div class="sub">Healthcare Data Science SQL Practice</div>
 </div>
 
-<div class="card">
-<h2>Employees Table</h2>
+<div class="progress" id="progress">Questions Completed: 0 / 75</div>
 
-<table>
-<thead>
-<tr>
-<th>emp_id</th>
-<th>name</th>
-<th>dept</th>
-<th>salary</th>
-</tr>
-</thead>
-<tbody>
-<tr><td>1</td><td>Alice</td><td>Finance</td><td>95000</td></tr>
-<tr><td>2</td><td>Bob</td><td>IT</td><td>87000</td></tr>
-<tr><td>3</td><td>Carol</td><td>Finance</td><td>110000</td></tr>
-<tr><td>4</td><td>David</td><td>HR</td><td>72000</td></tr>
-</tbody>
-</table>
-</div>
-
-<div class="card">
-<h2>Sales Table</h2>
-
-<table>
-<thead>
-<tr>
-<th>sale_id</th>
-<th>employee_id</th>
-<th>amount</th>
-<th>sale_date</th>
-</tr>
-</thead>
-<tbody>
-<tr><td>1</td><td>1</td><td>5000</td><td>2025-01-03</td></tr>
-<tr><td>2</td><td>1</td><td>7000</td><td>2025-01-05</td></tr>
-<tr><td>3</td><td>2</td><td>3000</td><td>2025-01-08</td></tr>
-<tr><td>4</td><td>3</td><td>12000</td><td>2025-01-10</td></tr>
-</tbody>
-</table>
-</div>
-
-<div class="card">
-<h2>Orders Table</h2>
-
-<table>
-<thead>
-<tr>
-<th>order_id</th>
-<th>customer_id</th>
-<th>amount</th>
-<th>order_date</th>
-</tr>
-</thead>
-<tbody>
-<tr><td>1</td><td>100</td><td>250</td><td>2025-02-01</td></tr>
-<tr><td>2</td><td>100</td><td>180</td><td>2025-02-04</td></tr>
-<tr><td>3</td><td>101</td><td>420</td><td>2025-02-07</td></tr>
-<tr><td>4</td><td>102</td><td>300</td><td>2025-02-10</td></tr>
-</tbody>
-</table>
+<div class="tags">
+  <div class="tag active" onclick="setLevel('Beginner')">🌷 Beginner</div>
+  <div class="tag" onclick="setLevel('Intermediate')">🩷 Intermediate</div>
+  <div class="tag" onclick="setLevel('Interview')">🌹 Interview</div>
 </div>
 
 <div class="card">
 
-<h2>Question Categories</h2>
+  <div class="small" id="counter"></div>
 
-<div class="filters" id="filters"></div>
+  <div class="problem" id="question"></div>
 
-<div class="counter" id="counter"></div>
+  <div class="dataset" id="dataset"></div>
 
-<div class="question" id="question"></div>
+  <div class="sql-box">
+    Write your answer here...
+    <br><br>
+    SELECT
+  </div>
 
-<div class="hint" id="hint"></div>
+  <div class="buttons">
 
-<div class="answer" id="answer"></div>
+    <button class="btn light" onclick="toggle('hint')">🌷 Hint</button>
+    <button class="btn alt" onclick="toggle('thinking')">💭 How To Think</button>
+    <button class="btn" onclick="toggle('answer')">✨ Reveal Answer</button>
+    <button class="btn" onclick="next()">➡️ Next Question</button>
 
-<div class="controls">
-<button onclick="prevQuestion()">Previous</button>
-<button onclick="toggleAnswer()">Show Answer</button>
-<button onclick="nextQuestion()">Next</button>
+  </div>
+
+  <div class="section" id="hint"></div>
+  <div class="section" id="thinking"></div>
+
+  <div class="section" id="answer"></div>
+
 </div>
 
+<div class="footer-nav">
+  <button onclick="prev()">⬅ Previous</button>
+  <div></div>
+  <button onclick="next()">Next ➡</button>
 </div>
 
 </div>
 
 <script>
 
-const sqlQuestions = [
+const questions = [
 
 {
-cat:"SELECT & Filter",
-q:"Select all employees in the Finance department earning more than $90,000.",
-hint:"WHERE dept='Finance' AND salary > 90000",
-a:`SELECT *
+level:"Beginner",
+q:"The hospital CFO wants total salary expense per department.",
+dataset:`
+<table>
+<tr><th>emp_id</th><th>dept</th><th>salary</th></tr>
+<tr><td>1</td><td>Finance</td><td>95000</td></tr>
+<tr><td>2</td><td>IT</td><td>87000</td></tr>
+<tr><td>3</td><td>Finance</td><td>110000</td></tr>
+</table>
+`,
+hint:"Think about grouping employees by department.",
+thinking:`
+1. We need one row per department
+2. That means GROUP BY
+3. We need total salary
+4. Use SUM()
+`,
+answer:`
+SELECT dept, SUM(salary)
 FROM employees
-WHERE dept='Finance'
-AND salary > 90000;`
+GROUP BY dept;
+`
 },
 
 {
-cat:"Aggregations",
-q:"Find average salary by department.",
-hint:"GROUP BY department",
-a:`SELECT dept,
-AVG(salary) AS avg_salary
-FROM employees
-GROUP BY dept;`
+level:"Beginner",
+q:"What is the average cost per patient visit?",
+dataset:`
+<table>
+<tr><th>visit_id</th><th>cost</th></tr>
+<tr><td>1</td><td>200</td></tr>
+<tr><td>2</td><td>450</td></tr>
+</table>
+`,
+hint:"Average means aggregation.",
+thinking:`
+Use AVG() over cost column.
+`,
+answer:`
+SELECT AVG(cost)
+FROM visits;
+`
 },
 
 {
-cat:"JOINs",
-q:"Show employee names and sales amounts.",
-hint:"Join employees and sales",
-a:`SELECT e.name,
-s.amount
-FROM employees e
-JOIN sales s
-ON e.emp_id = s.employee_id;`
+level:"Intermediate",
+q:"Calculate percentage of approved insurance claims.",
+dataset:`
+<table>
+<tr><th>claim_id</th><th>status</th></tr>
+<tr><td>1</td><td>approved</td></tr>
+<tr><td>2</td><td>denied</td></tr>
+<tr><td>3</td><td>approved</td></tr>
+</table>
+`,
+hint:"Count approved vs total claims.",
+thinking:`
+1. COUNT approved claims
+2. Divide by total
+3. Multiply by 100
+`,
+answer:`
+SELECT 
+100.0 * SUM(CASE WHEN status='approved' THEN 1 ELSE 0 END)
+/ COUNT(*) AS approval_rate
+FROM claims;
+`
 },
 
 {
-cat:"Window Functions",
-q:"Rank employees by salary.",
-hint:"Use RANK()",
-a:`SELECT name,
-salary,
-RANK() OVER(
-ORDER BY salary DESC
-) AS salary_rank
-FROM employees;`
+level:"Interview",
+q:"Find highest-paid employee in each department.",
+dataset:`
+<table>
+<tr><th>name</th><th>dept</th><th>salary</th></tr>
+<tr><td>Alice</td><td>Finance</td><td>95000</td></tr>
+<tr><td>Bob</td><td>IT</td><td>87000</td></tr>
+<tr><td>Carol</td><td>Finance</td><td>110000</td></tr>
+</table>
+`,
+hint:"Think ranking per group.",
+thinking:`
+1. Partition by department
+2. Rank salaries descending
+3. Filter rank = 1
+`,
+answer:`
+SELECT *
+FROM (
+  SELECT *,
+  RANK() OVER(PARTITION BY dept ORDER BY salary DESC) rnk
+  FROM employees
+) t
+WHERE rnk = 1;
+`
 }
 
 ];
 
-/* paste all remaining questions here */
+let index = 0;
+let level = "Beginner";
+let completed = 0;
 
-let currentIndex = 0;
-let currentCategory = "All";
-
-function categories() {
-    return [
-        "All",
-        ...new Set(sqlQuestions.map(x => x.cat))
-    ];
+function filtered(){
+  return questions.filter(q => q.level === level);
 }
 
-function filteredQuestions() {
-    if(currentCategory === "All")
-        return sqlQuestions;
+function render(){
 
-    return sqlQuestions.filter(
-        q => q.cat === currentCategory
-    );
+  const data = filtered();
+
+  if(!data.length) return;
+
+  const q = data[index % data.length];
+
+  document.getElementById("question").innerText = q.q;
+  document.getElementById("dataset").innerHTML = q.dataset;
+
+  document.getElementById("hint").innerText = q.hint;
+  document.getElementById("thinking").innerText = q.thinking;
+  document.getElementById("answer").innerText = q.answer;
+
+  document.getElementById("counter").innerText =
+    `Question ${index+1} / ${data.length}`;
+
+  document.getElementById("progress").innerText =
+    `Questions Completed: ${completed} / 75`;
+
+  hideAll();
 }
 
-function renderFilters() {
-
-    const container =
-        document.getElementById("filters");
-
-    container.innerHTML = "";
-
-    categories().forEach(cat => {
-
-        const btn =
-            document.createElement("button");
-
-        btn.className =
-            "filter-btn" +
-            (cat===currentCategory ? " active":"");
-
-        btn.innerText = cat;
-
-        btn.onclick = () => {
-            currentCategory = cat;
-            currentIndex = 0;
-            renderQuestion();
-            renderFilters();
-        };
-
-        container.appendChild(btn);
-    });
+function hideAll(){
+  document.querySelectorAll(".section").forEach(s=>{
+    s.style.display="none";
+  });
 }
 
-function renderQuestion(){
-
-    const questions =
-        filteredQuestions();
-
-    if(!questions.length) return;
-
-    const q =
-        questions[currentIndex];
-
-    document.getElementById(
-        "counter"
-    ).innerText =
-        `${currentIndex+1} / ${questions.length}`;
-
-    document.getElementById(
-        "question"
-    ).innerText = q.q;
-
-    document.getElementById(
-        "hint"
-    ).innerText = q.hint;
-
-    document.getElementById(
-        "answer"
-    ).innerHTML =
-        `<div class="code"><pre>${q.a}</pre></div>`;
-
-    document.getElementById(
-        "answer"
-    ).style.display = "none";
+function toggle(id){
+  const el = document.getElementById(id);
+  el.style.display = el.style.display === "block" ? "none" : "block";
 }
 
-function toggleAnswer(){
-
-    const box =
-        document.getElementById(
-            "answer"
-        );
-
-    box.style.display =
-        box.style.display === "block"
-        ? "none"
-        : "block";
+function next(){
+  index++;
+  completed++;
+  render();
 }
 
-function nextQuestion(){
-
-    const questions =
-        filteredQuestions();
-
-    currentIndex =
-        (currentIndex + 1)
-        % questions.length;
-
-    renderQuestion();
+function prev(){
+  index = Math.max(0,index-1);
+  render();
 }
 
-function prevQuestion(){
+function setLevel(lvl){
+  level = lvl;
+  index = 0;
 
-    const questions =
-        filteredQuestions();
+  document.querySelectorAll(".tag").forEach(t=>{
+    t.classList.remove("active");
+  });
 
-    currentIndex =
-        (currentIndex - 1 +
-        questions.length)
-        % questions.length;
+  event.target.classList.add("active");
 
-    renderQuestion();
+  render();
 }
 
-renderFilters();
-renderQuestion();
+render();
 
 </script>
 
