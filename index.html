@@ -23,137 +23,70 @@
   box-sizing:border-box;
   margin:0;
   padding:0;
-  font-family:Arial, Helvetica, sans-serif;
+  font-family:Arial;
 }
 
 body{
   background:linear-gradient(135deg,var(--bg1),var(--bg2),var(--bg3));
-  color:var(--text);
   padding:30px;
 }
 
-.container{
-  max-width:900px;
-  margin:auto;
-}
+.container{max-width:900px;margin:auto;}
 
-.header{
-  text-align:center;
-  margin-bottom:10px;
-}
-
-h1{ font-size:2.2rem; }
-
-.sub{
-  color:var(--muted);
-  margin-top:6px;
-}
-
-.progress{
-  text-align:center;
-  margin:15px 0 25px;
-  color:var(--muted);
-}
+h1{text-align:center}
 
 .card{
-  background:var(--card);
-  border-radius:16px;
-  padding:18px;
-  margin-bottom:18px;
-  box-shadow:0 10px 25px rgba(236,72,153,0.15);
-}
-
-.tags{
-  display:flex;
-  justify-content:center;
-  gap:10px;
-  margin-bottom:20px;
-}
-
-.tag{
-  padding:6px 12px;
-  border-radius:999px;
-  cursor:pointer;
-  border:1px solid #ddd;
   background:white;
+  padding:18px;
+  margin:15px 0;
+  border-radius:14px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.08);
 }
 
-.tag.active{
-  background:var(--rose);
-  color:white;
-  border:none;
-}
-
-.problem{
-  font-size:1.15rem;
-  line-height:1.5;
-  margin-bottom:10px;
-}
-
-.dataset table{
+/* TABLES */
+table{
   width:100%;
   border-collapse:collapse;
   font-size:0.9rem;
 }
 
-.dataset th, .dataset td{
+th,td{
   border:1px solid #eee;
   padding:6px;
 }
 
-.dataset th{
+th{
   background:#faf5ff;
 }
 
-/* SQL BOX */
-textarea{
+.sql{
   width:100%;
-  min-height:140px;
+  min-height:120px;
   background:#0f172a;
   color:white;
   padding:12px;
   border-radius:10px;
-  margin-top:10px;
+  border:none;
   font-family:monospace;
-  border:none;
-  outline:none;
-  resize:vertical;
 }
 
-/* BUTTONS */
-.buttons{
-  display:flex;
-  flex-wrap:wrap;
-  gap:10px;
-  margin-top:15px;
-}
-
+/* buttons */
 button{
+  padding:8px 12px;
+  border-radius:8px;
   border:none;
-  padding:10px 14px;
-  border-radius:10px;
   cursor:pointer;
-  font-weight:bold;
+  margin:5px;
 }
 
-.btn{ background:var(--rose); color:white; }
-.btn.alt{ background:var(--purple); }
-.btn.light{ background:#f3f4f6; color:#111; }
+.pink{background:#f43f5e;color:white}
+.purple{background:#a855f7;color:white}
+.gray{background:#eee}
 
-/* SECTIONS */
-.section{
-  display:none;
-  margin-top:10px;
-  padding:10px;
-  border-radius:10px;
-  background:#fafafa;
-  white-space:pre-wrap;
-}
-
-.small{
-  color:var(--muted);
+.schema{
   font-size:0.9rem;
-  margin-bottom:6px;
+  color:#374151;
+  line-height:1.6;
 }
 </style>
 </head>
@@ -162,63 +95,38 @@ button{
 
 <div class="container">
 
-<div class="header">
-  <h1>🌸 SQL Interview Garden 🌸</h1>
-  <div class="sub">Healthcare Data Science SQL Practice</div>
+<h1>🌸 SQL Interview Garden 🌸</h1>
+
+<!-- 🔥 FIX 1: GLOBAL DATABASE SCHEMA -->
+<div class="card">
+  <h3>📦 Database Schema (Practice Across Tables)</h3>
+
+  <div class="schema">
+
+    <b>Employees</b>(emp_id, name, division_id, salary, manager_id)<br>
+    <b>Divisions</b>(division_id, division_name)<br>
+    <b>Claims</b>(claim_id, emp_id, status, amount)<br>
+
+  </div>
 </div>
 
-<div class="progress" id="progress">Questions Completed: 0 / 75</div>
-
-<div class="tags">
-  <div class="tag active" onclick="setLevel('Beginner')">🌷 Beginner</div>
-  <div class="tag" onclick="setLevel('Intermediate')">🩷 Intermediate</div>
-  <div class="tag" onclick="setLevel('Interview')">🌹 Interview</div>
-</div>
-
-<!-- QUESTION CARD -->
+<!-- QUESTION -->
 <div class="card">
 
-  <div class="small" id="counter"></div>
+  <h3 id="question"></h3>
 
-  <div class="problem" id="question"></div>
+  <div id="dataset"></div>
 
-  <div class="dataset" id="dataset"></div>
+  <textarea class="sql" placeholder="Write SQL here..."></textarea>
 
-  <!-- SQL EDITOR -->
-  <textarea id="sqlInput" placeholder="Write your SQL here..."></textarea>
-
-  <!-- CORE BUTTONS -->
-  <div class="buttons">
-    <button class="btn light" onclick="toggle('hint')">🌷 Hint</button>
-    <button class="btn alt" onclick="toggle('thinking')">💭 How To Think</button>
-    <button class="btn" onclick="toggle('answer')">✨ Reveal Answer</button>
-    <button class="btn" onclick="next()">➡️ Next</button>
+  <div>
+    <button class="pink" onclick="hint()">Hint</button>
+    <button class="purple" onclick="think()">How To Think</button>
+    <button class="gray" onclick="next()">Next</button>
   </div>
 
-  <!-- BLOG THINKING LAYER (GLOBAL ADDITION) -->
-  <div class="card">
-    <div class="small">🌸 Step 1 — Understand the Data</div>
-    <div style="color:#6b7280;font-size:0.95rem;">
-      Before writing SQL, mentally group the data.<br><br>
-
-      • What is one row supposed to represent?<br>
-      • What changes if you GROUP BY a column?<br>
-      • What should the final output look like?
-    </div>
-
-    <div class="buttons" style="margin-top:10px;">
-      <button class="btn light" onclick="toggle('breakdown')">💭 Break Into Pieces</button>
-      <button class="btn light" onclick="toggle('simulate')">🧠 Simulate Data</button>
-    </div>
-
-    <div class="section" id="breakdown"></div>
-    <div class="section" id="simulate"></div>
-  </div>
-
-  <!-- OUTPUT SECTIONS -->
-  <div class="section" id="hint"></div>
-  <div class="section" id="thinking"></div>
-  <div class="section" id="answer"></div>
+  <div id="hintBox"></div>
+  <div id="thinkBox"></div>
 
 </div>
 
@@ -227,125 +135,84 @@ button{
 <script>
 
 const questions = [
-
 {
-level:"Beginner",
-q:"The hospital CFO wants total salary expense per department.",
+q:"Using Employees + Divisions, find total salary per division name.",
 dataset:`
 <table>
-<tr><th>emp_id</th><th>dept</th><th>salary</th></tr>
-<tr><td>1</td><td>Finance</td><td>95000</td></tr>
-<tr><td>2</td><td>IT</td><td>87000</td></tr>
+<tr><th>emp_id</th><th>division_id</th><th>salary</th></tr>
+<tr><td>1</td><td>100</td><td>40000</td></tr>
+<tr><td>2</td><td>100</td><td>80000</td></tr>
+</table>
+
+<br>
+
+<table>
+<tr><th>division_id</th><th>division_name</th></tr>
+<tr><td>100</td><td>Finance</td></tr>
 </table>
 `,
-hint:"Think GROUP BY department.",
-thinking:"We aggregate salaries per department using SUM() + GROUP BY.",
-answer:`SELECT dept, SUM(salary) FROM employees GROUP BY dept;`
+hint:"You need a JOIN + GROUP BY",
+think:"Step 1: join tables. Step 2: group by division_name. Step 3: SUM salary."
 },
 
 {
-level:"Intermediate",
-q:"Calculate approval rate of insurance claims.",
+q:"Using Employees + Claims, compute approval rate per employee.",
 dataset:`
 <table>
-<tr><th>id</th><th>status</th></tr>
+<tr><th>emp_id</th><th>status</th></tr>
 <tr><td>1</td><td>approved</td></tr>
-<tr><td>2</td><td>denied</td></tr>
+<tr><td>1</td><td>denied</td></tr>
+<tr><td>2</td><td>approved</td></tr>
 </table>
 `,
-hint:"Use conditional aggregation.",
-thinking:"Use CASE inside SUM divided by COUNT(*)",
-answer:`SELECT 100.0 * SUM(CASE WHEN status='approved' THEN 1 ELSE 0 END)/COUNT(*) FROM claims;`
+hint:"Conditional aggregation",
+think:"COUNT approved / COUNT total grouped by emp_id"
 },
 
 {
-level:"Interview",
-q:"Find highest-paid employee per department.",
+q:"Find highest paid employee per division using Employees + Divisions.",
 dataset:`
 <table>
-<tr><th>name</th><th>dept</th><th>salary</th></tr>
-<tr><td>Alice</td><td>Finance</td><td>95000</td></tr>
-<tr><td>Bob</td><td>IT</td><td>87000</td></tr>
+<tr><th>name</th><th>division_id</th><th>salary</th></tr>
+<tr><td>Alice</td><td>100</td><td>90000</td></tr>
+<tr><td>Bob</td><td>100</td><td>70000</td></tr>
 </table>
 `,
-hint:"Use ranking window function.",
-thinking:"RANK() OVER(PARTITION BY dept ORDER BY salary DESC)",
-answer:`SELECT * FROM (SELECT *, RANK() OVER(PARTITION BY dept ORDER BY salary DESC) r FROM employees) t WHERE r=1;`
+hint:"Window function or subquery",
+think:"Use RANK() OVER(PARTITION BY division_id ORDER BY salary DESC)"
 }
 
 ];
 
-let index = 0;
-let level = "Beginner";
-let completed = 0;
-
-function filtered(){
-  return questions.filter(q => q.level === level);
-}
+let i = 0;
 
 function render(){
-
-  const data = filtered();
-  if(!data.length) return;
-
-  const q = data[index % data.length];
+  const q = questions[i];
 
   document.getElementById("question").innerText = q.q;
   document.getElementById("dataset").innerHTML = q.dataset;
 
-  document.getElementById("hint").innerText = q.hint;
-  document.getElementById("thinking").innerText = q.thinking;
-  document.getElementById("answer").innerText = q.answer;
-
-  document.getElementById("counter").innerText =
-    `Question ${index+1} / ${data.length}`;
-
-  document.getElementById("progress").innerText =
-    `Questions Completed: ${completed} / 75`;
-
-  document.getElementById("breakdown").innerText =
-`1. Identify if grouping is needed
-2. Identify aggregation (SUM/COUNT/AVG)
-3. Identify joins
-4. Identify post-filter logic`;
-
-  document.getElementById("simulate").innerText =
-`Mentally compute expected output BEFORE SQL:
-- Group rows manually
-- Estimate aggregates
-- Predict result shape`;
-
-  hideAll();
+  document.getElementById("hintBox").innerText = "";
+  document.getElementById("thinkBox").innerText = "";
 }
 
-function hideAll(){
-  document.querySelectorAll(".section").forEach(s=>{
-    s.style.display="none";
-  });
+function hint(){
+  document.getElementById("hintBox").innerText =
+    questions[i].hint;
 }
 
-function toggle(id){
-  const el = document.getElementById(id);
-  el.style.display = el.style.display === "block" ? "none" : "block";
+function think(){
+  document.getElementById("thinkBox").innerText =
+    questions[i].think;
 }
 
 function next(){
-  index++;
-  completed++;
-  render();
-}
-
-function setLevel(lvl){
-  level = lvl;
-  index = 0;
-
-  document.querySelectorAll(".tag").forEach(t=>{
-    t.classList.remove("active");
-  });
-
-  event.target.classList.add("active");
-
-  render();
+  if(i < questions.length - 1){
+    i++;
+    render();
+  } else {
+    alert("End of set");
+  }
 }
 
 render();
