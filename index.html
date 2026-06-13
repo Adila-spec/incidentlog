@@ -16,7 +16,6 @@
   --muted:#6b7280;
 
   --rose:#f43f5e;
-  --pink:#ec4899;
   --purple:#a855f7;
 }
 
@@ -43,9 +42,7 @@ body{
   margin-bottom:10px;
 }
 
-h1{
-  font-size:2.2rem;
-}
+h1{ font-size:2.2rem; }
 
 .sub{
   color:var(--muted);
@@ -108,7 +105,7 @@ h1{
   background:#faf5ff;
 }
 
-/* ✅ REAL SQL EDITOR */
+/* SQL BOX */
 textarea{
   width:100%;
   min-height:140px;
@@ -123,6 +120,7 @@ textarea{
   resize:vertical;
 }
 
+/* BUTTONS */
 .buttons{
   display:flex;
   flex-wrap:wrap;
@@ -138,20 +136,11 @@ button{
   font-weight:bold;
 }
 
-.btn{
-  background:var(--rose);
-  color:white;
-}
+.btn{ background:var(--rose); color:white; }
+.btn.alt{ background:var(--purple); }
+.btn.light{ background:#f3f4f6; color:#111; }
 
-.btn.alt{
-  background:var(--purple);
-}
-
-.btn.light{
-  background:#f3f4f6;
-  color:#111;
-}
-
+/* SECTIONS */
 .section{
   display:none;
   margin-top:10px;
@@ -161,15 +150,10 @@ button{
   white-space:pre-wrap;
 }
 
-.footer-nav{
-  display:flex;
-  justify-content:space-between;
-  margin-top:20px;
-}
-
 .small{
   color:var(--muted);
   font-size:0.9rem;
+  margin-bottom:6px;
 }
 </style>
 </head>
@@ -191,6 +175,7 @@ button{
   <div class="tag" onclick="setLevel('Interview')">🌹 Interview</div>
 </div>
 
+<!-- QUESTION CARD -->
 <div class="card">
 
   <div class="small" id="counter"></div>
@@ -199,25 +184,42 @@ button{
 
   <div class="dataset" id="dataset"></div>
 
-  <!-- ✅ REAL WRITABLE SQL BOX -->
+  <!-- SQL EDITOR -->
   <textarea id="sqlInput" placeholder="Write your SQL here..."></textarea>
 
+  <!-- CORE BUTTONS -->
   <div class="buttons">
     <button class="btn light" onclick="toggle('hint')">🌷 Hint</button>
     <button class="btn alt" onclick="toggle('thinking')">💭 How To Think</button>
     <button class="btn" onclick="toggle('answer')">✨ Reveal Answer</button>
-    <button class="btn" onclick="next()">➡️ Next Question</button>
+    <button class="btn" onclick="next()">➡️ Next</button>
   </div>
 
+  <!-- BLOG THINKING LAYER (GLOBAL ADDITION) -->
+  <div class="card">
+    <div class="small">🌸 Step 1 — Understand the Data</div>
+    <div style="color:#6b7280;font-size:0.95rem;">
+      Before writing SQL, mentally group the data.<br><br>
+
+      • What is one row supposed to represent?<br>
+      • What changes if you GROUP BY a column?<br>
+      • What should the final output look like?
+    </div>
+
+    <div class="buttons" style="margin-top:10px;">
+      <button class="btn light" onclick="toggle('breakdown')">💭 Break Into Pieces</button>
+      <button class="btn light" onclick="toggle('simulate')">🧠 Simulate Data</button>
+    </div>
+
+    <div class="section" id="breakdown"></div>
+    <div class="section" id="simulate"></div>
+  </div>
+
+  <!-- OUTPUT SECTIONS -->
   <div class="section" id="hint"></div>
   <div class="section" id="thinking"></div>
   <div class="section" id="answer"></div>
 
-</div>
-
-<div class="footer-nav">
-  <button onclick="prev()">⬅ Previous</button>
-  <button onclick="next()">Next ➡</button>
 </div>
 
 </div>
@@ -234,70 +236,41 @@ dataset:`
 <tr><th>emp_id</th><th>dept</th><th>salary</th></tr>
 <tr><td>1</td><td>Finance</td><td>95000</td></tr>
 <tr><td>2</td><td>IT</td><td>87000</td></tr>
-<tr><td>3</td><td>Finance</td><td>110000</td></tr>
 </table>
 `,
 hint:"Think GROUP BY department.",
-thinking:`
-We need one row per department → GROUP BY  
-We are summing salaries → SUM()
-`,
-answer:`
-SELECT dept, SUM(salary)
-FROM employees
-GROUP BY dept;
-`
+thinking:"We aggregate salaries per department using SUM() + GROUP BY.",
+answer:`SELECT dept, SUM(salary) FROM employees GROUP BY dept;`
 },
 
 {
 level:"Intermediate",
-q:"Calculate percentage of approved insurance claims.",
+q:"Calculate approval rate of insurance claims.",
 dataset:`
 <table>
-<tr><th>claim_id</th><th>status</th></tr>
+<tr><th>id</th><th>status</th></tr>
 <tr><td>1</td><td>approved</td></tr>
 <tr><td>2</td><td>denied</td></tr>
-<tr><td>3</td><td>approved</td></tr>
 </table>
 `,
 hint:"Use conditional aggregation.",
-thinking:`
-Count approved claims / total claims
-Use CASE inside SUM
-`,
-answer:`
-SELECT 
-100.0 * SUM(CASE WHEN status='approved' THEN 1 ELSE 0 END)
-/ COUNT(*) AS approval_rate
-FROM claims;
-`
+thinking:"Use CASE inside SUM divided by COUNT(*)",
+answer:`SELECT 100.0 * SUM(CASE WHEN status='approved' THEN 1 ELSE 0 END)/COUNT(*) FROM claims;`
 },
 
 {
 level:"Interview",
-q:"Find highest-paid employee in each department.",
+q:"Find highest-paid employee per department.",
 dataset:`
 <table>
 <tr><th>name</th><th>dept</th><th>salary</th></tr>
 <tr><td>Alice</td><td>Finance</td><td>95000</td></tr>
 <tr><td>Bob</td><td>IT</td><td>87000</td></tr>
-<tr><td>Carol</td><td>Finance</td><td>110000</td></tr>
 </table>
 `,
-hint:"Think ranking per group.",
-thinking:`
-Use RANK() OVER(PARTITION BY dept ORDER BY salary DESC)
-Then filter rank = 1
-`,
-answer:`
-SELECT *
-FROM (
-  SELECT *,
-  RANK() OVER(PARTITION BY dept ORDER BY salary DESC) rnk
-  FROM employees
-) t
-WHERE rnk = 1;
-`
+hint:"Use ranking window function.",
+thinking:"RANK() OVER(PARTITION BY dept ORDER BY salary DESC)",
+answer:`SELECT * FROM (SELECT *, RANK() OVER(PARTITION BY dept ORDER BY salary DESC) r FROM employees) t WHERE r=1;`
 }
 
 ];
@@ -330,6 +303,18 @@ function render(){
   document.getElementById("progress").innerText =
     `Questions Completed: ${completed} / 75`;
 
+  document.getElementById("breakdown").innerText =
+`1. Identify if grouping is needed
+2. Identify aggregation (SUM/COUNT/AVG)
+3. Identify joins
+4. Identify post-filter logic`;
+
+  document.getElementById("simulate").innerText =
+`Mentally compute expected output BEFORE SQL:
+- Group rows manually
+- Estimate aggregates
+- Predict result shape`;
+
   hideAll();
 }
 
@@ -347,11 +332,6 @@ function toggle(id){
 function next(){
   index++;
   completed++;
-  render();
-}
-
-function prev(){
-  index = Math.max(0,index-1);
   render();
 }
 
