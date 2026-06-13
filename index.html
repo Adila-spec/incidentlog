@@ -1,62 +1,23 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SQL Interview Garden 🌸</title>
+<meta charset="utf-8">
+<title>SQL Garden 🌸</title>
 
 <style>
-:root{
-  --bg1:#ffe4ec;
-  --bg2:#e9d5ff;
-  --bg3:#fff1f2;
-
-  --card:#ffffff;
-  --text:#1f2937;
-  --muted:#6b7280;
-
-  --rose:#f43f5e;
-  --purple:#a855f7;
-}
-
-*{
-  box-sizing:border-box;
-  margin:0;
-  padding:0;
-  font-family:Arial;
-}
-
 body{
-  background:linear-gradient(135deg,var(--bg1),var(--bg2),var(--bg3));
+  font-family:Arial;
+  background:#ffe4ec;
   padding:30px;
 }
 
 .container{max-width:900px;margin:auto;}
 
-h1{text-align:center}
-
 .card{
   background:white;
-  padding:18px;
-  margin:15px 0;
-  border-radius:14px;
-  box-shadow:0 10px 25px rgba(0,0,0,0.08);
-}
-
-/* TABLES */
-table{
-  width:100%;
-  border-collapse:collapse;
-  font-size:0.9rem;
-}
-
-th,td{
-  border:1px solid #eee;
-  padding:6px;
-}
-
-th{
-  background:#faf5ff;
+  padding:15px;
+  border-radius:12px;
+  margin-bottom:15px;
 }
 
 .sql{
@@ -64,30 +25,25 @@ th{
   min-height:120px;
   background:#0f172a;
   color:white;
-  padding:12px;
-  border-radius:10px;
   border:none;
+  border-radius:10px;
+  padding:10px;
   font-family:monospace;
 }
 
-/* buttons */
 button{
-  padding:8px 12px;
-  border-radius:8px;
-  border:none;
-  cursor:pointer;
   margin:5px;
+  padding:8px 12px;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
 }
 
 .pink{background:#f43f5e;color:white}
 .purple{background:#a855f7;color:white}
-.gray{background:#eee}
+.gray{background:#e5e7eb}
 
-.schema{
-  font-size:0.9rem;
-  color:#374151;
-  line-height:1.6;
-}
+.small{color:#6b7280;font-size:0.9rem}
 </style>
 </head>
 
@@ -95,24 +51,18 @@ button{
 
 <div class="container">
 
-<h1>🌸 SQL Interview Garden 🌸</h1>
+<h2>🌸 SQL Interview Garden</h2>
 
-<!-- 🔥 FIX 1: GLOBAL DATABASE SCHEMA -->
+<!-- GLOBAL SCHEMA -->
 <div class="card">
-  <h3>📦 Database Schema (Practice Across Tables)</h3>
-
-  <div class="schema">
-
-    <b>Employees</b>(emp_id, name, division_id, salary, manager_id)<br>
-    <b>Divisions</b>(division_id, division_name)<br>
-    <b>Claims</b>(claim_id, emp_id, status, amount)<br>
-
-  </div>
+  <h3>📦 Schema</h3>
+  <div class="small" id="schema"></div>
 </div>
 
 <!-- QUESTION -->
 <div class="card">
 
+  <div class="small" id="progress"></div>
   <h3 id="question"></h3>
 
   <div id="dataset"></div>
@@ -120,8 +70,8 @@ button{
   <textarea class="sql" placeholder="Write SQL here..."></textarea>
 
   <div>
-    <button class="pink" onclick="hint()">Hint</button>
-    <button class="purple" onclick="think()">How To Think</button>
+    <button class="pink" onclick="showHint()">Hint</button>
+    <button class="purple" onclick="showThinking()">How To Think</button>
     <button class="gray" onclick="next()">Next</button>
   </div>
 
@@ -134,87 +84,109 @@ button{
 
 <script>
 
-const questions = [
+/* =========================
+   1. SCHEMA (GLOBAL)
+========================= */
+const SCHEMA = {
+  Employees: ["emp_id","name","division_id","salary","manager_id"],
+  Divisions: ["division_id","division_name"],
+  Claims: ["claim_id","emp_id","status","amount"]
+};
+
+/* =========================
+   2. QUESTION BANK (ONLY EDIT THIS)
+========================= */
+const QUESTION_BANK = [
 {
-q:"Using Employees + Divisions, find total salary per division name.",
-dataset:`
+  id:1,
+  level:"Beginner",
+  prompt:"Using Employees + Divisions, find total salary per division name.",
+  dataset:`
 <table>
 <tr><th>emp_id</th><th>division_id</th><th>salary</th></tr>
 <tr><td>1</td><td>100</td><td>40000</td></tr>
 <tr><td>2</td><td>100</td><td>80000</td></tr>
 </table>
 
-<br>
-
 <table>
 <tr><th>division_id</th><th>division_name</th></tr>
 <tr><td>100</td><td>Finance</td></tr>
 </table>
 `,
-hint:"You need a JOIN + GROUP BY",
-think:"Step 1: join tables. Step 2: group by division_name. Step 3: SUM salary."
+  hint:"JOIN + GROUP BY division_name",
+  thinking:[
+    "Join Employees with Divisions",
+    "Group by division_name",
+    "Use SUM(salary)"
+  ]
 },
-
 {
-q:"Using Employees + Claims, compute approval rate per employee.",
-dataset:`
+  id:2,
+  level:"Beginner",
+  prompt:"Calculate approval rate per employee using Claims.",
+  dataset:`
 <table>
 <tr><th>emp_id</th><th>status</th></tr>
 <tr><td>1</td><td>approved</td></tr>
 <tr><td>1</td><td>denied</td></tr>
-<tr><td>2</td><td>approved</td></tr>
 </table>
 `,
-hint:"Conditional aggregation",
-think:"COUNT approved / COUNT total grouped by emp_id"
-},
-
-{
-q:"Find highest paid employee per division using Employees + Divisions.",
-dataset:`
-<table>
-<tr><th>name</th><th>division_id</th><th>salary</th></tr>
-<tr><td>Alice</td><td>100</td><td>90000</td></tr>
-<tr><td>Bob</td><td>100</td><td>70000</td></tr>
-</table>
-`,
-hint:"Window function or subquery",
-think:"Use RANK() OVER(PARTITION BY division_id ORDER BY salary DESC)"
+  hint:"Conditional aggregation",
+  thinking:[
+    "Count approved claims",
+    "Divide by total claims",
+    "Group by emp_id"
+  ]
 }
-
 ];
 
-let i = 0;
+/* =========================
+   3. ENGINE (DO NOT TOUCH)
+========================= */
+
+let index = 0;
+
+function renderSchema(){
+  let out = "";
+  for(let t in SCHEMA){
+    out += `<b>${t}</b>: (${SCHEMA[t].join(", ")})<br>`;
+  }
+  document.getElementById("schema").innerHTML = out;
+}
 
 function render(){
-  const q = questions[i];
+  const q = QUESTION_BANK[index];
 
-  document.getElementById("question").innerText = q.q;
+  document.getElementById("progress").innerText =
+    `Question ${index+1} / ${QUESTION_BANK.length}`;
+
+  document.getElementById("question").innerText = q.prompt;
   document.getElementById("dataset").innerHTML = q.dataset;
 
   document.getElementById("hintBox").innerText = "";
   document.getElementById("thinkBox").innerText = "";
 }
 
-function hint(){
+function showHint(){
   document.getElementById("hintBox").innerText =
-    questions[i].hint;
+    QUESTION_BANK[index].hint;
 }
 
-function think(){
+function showThinking(){
   document.getElementById("thinkBox").innerText =
-    questions[i].think;
+    QUESTION_BANK[index].thinking.join("\n");
 }
 
 function next(){
-  if(i < questions.length - 1){
-    i++;
+  if(index < QUESTION_BANK.length - 1){
+    index++;
     render();
   } else {
-    alert("End of set");
+    alert("End of questions");
   }
 }
 
+renderSchema();
 render();
 
 </script>
