@@ -1,13 +1,14 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="utf-8">
-<title>SQL Garden 🌸</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SQL Interview Garden 🌸</title>
 
 <style>
 body{
   font-family:Arial;
-  background:#ffe4ec;
+  background:linear-gradient(135deg,#ffe4ec,#e9d5ff,#fff1f2);
   padding:30px;
 }
 
@@ -15,12 +16,28 @@ body{
 
 .card{
   background:white;
-  padding:15px;
-  border-radius:12px;
+  padding:16px;
+  border-radius:14px;
   margin-bottom:15px;
+  box-shadow:0 8px 20px rgba(0,0,0,0.08);
 }
 
-.sql{
+h1{text-align:center}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:10px;
+}
+
+th,td{
+  border:1px solid #eee;
+  padding:6px;
+}
+
+th{background:#faf5ff}
+
+textarea{
   width:100%;
   min-height:120px;
   background:#0f172a;
@@ -32,10 +49,10 @@ body{
 }
 
 button{
-  margin:5px;
   padding:8px 12px;
   border:none;
   border-radius:8px;
+  margin:5px;
   cursor:pointer;
 }
 
@@ -51,15 +68,17 @@ button{
 
 <div class="container">
 
-<h2>🌸 SQL Interview Garden</h2>
+<h1>🌸 SQL Interview Garden (75 Questions)</h1>
 
-<!-- GLOBAL SCHEMA -->
 <div class="card">
-  <h3>📦 Schema</h3>
-  <div class="small" id="schema"></div>
+  <h3>📦 Schema (Fixed)</h3>
+  <div class="small">
+    Employees(emp_id, name, dept_id, salary)<br>
+    Departments(dept_id, dept_name)<br>
+    Claims(claim_id, emp_id, status)
+  </div>
 </div>
 
-<!-- QUESTION -->
 <div class="card">
 
   <div class="small" id="progress"></div>
@@ -67,11 +86,11 @@ button{
 
   <div id="dataset"></div>
 
-  <textarea class="sql" placeholder="Write SQL here..."></textarea>
+  <textarea placeholder="Write SQL here..."></textarea>
 
   <div>
-    <button class="pink" onclick="showHint()">Hint</button>
-    <button class="purple" onclick="showThinking()">How To Think</button>
+    <button class="pink" onclick="hint()">Hint</button>
+    <button class="purple" onclick="think()">Thinking</button>
     <button class="gray" onclick="next()">Next</button>
   </div>
 
@@ -84,109 +103,140 @@ button{
 
 <script>
 
-/* =========================
-   1. SCHEMA (GLOBAL)
-========================= */
-const SCHEMA = {
-  Employees: ["emp_id","name","division_id","salary","manager_id"],
-  Divisions: ["division_id","division_name"],
-  Claims: ["claim_id","emp_id","status","amount"]
+/////////////////////////////////////////////////////
+// 1. FIXED DATABASE (3 TABLES, 4 ROWS EACH)
+/////////////////////////////////////////////////////
+
+const TABLES = {
+  Employees: [
+    {id:1,name:"Alice",dept_id:10,salary:90000},
+    {id:2,name:"Bob",dept_id:10,salary:70000},
+    {id:3,name:"Carol",dept_id:20,salary:120000},
+    {id:4,name:"David",dept_id:30,salary:60000}
+  ],
+  Departments: [
+    {dept_id:10,dept_name:"Finance"},
+    {dept_id:20,dept_name:"IT"},
+    {dept_id:30,dept_name:"HR"},
+    {dept_id:40,dept_name:"Ops"}
+  ],
+  Claims: [
+    {claim_id:1,emp_id:1,status:"approved"},
+    {claim_id:2,emp_id:2,status:"denied"},
+    {claim_id:3,emp_id:3,status:"approved"},
+    {claim_id:4,emp_id:4,status:"approved"}
+  ]
 };
 
-/* =========================
-   2. QUESTION BANK (ONLY EDIT THIS)
-========================= */
-const QUESTION_BANK = [
-{
-  id:1,
-  level:"Beginner",
-  prompt:"Using Employees + Divisions, find total salary per division name.",
-  dataset:`
-<table>
-<tr><th>emp_id</th><th>division_id</th><th>salary</th></tr>
-<tr><td>1</td><td>100</td><td>40000</td></tr>
-<tr><td>2</td><td>100</td><td>80000</td></tr>
-</table>
+/////////////////////////////////////////////////////
+// 2. QUESTION ENGINE (75 GENERATED QUESTIONS)
+/////////////////////////////////////////////////////
 
-<table>
-<tr><th>division_id</th><th>division_name</th></tr>
-<tr><td>100</td><td>Finance</td></tr>
-</table>
-`,
-  hint:"JOIN + GROUP BY division_name",
-  thinking:[
-    "Join Employees with Divisions",
-    "Group by division_name",
-    "Use SUM(salary)"
-  ]
-},
-{
-  id:2,
-  level:"Beginner",
-  prompt:"Calculate approval rate per employee using Claims.",
-  dataset:`
-<table>
-<tr><th>emp_id</th><th>status</th></tr>
-<tr><td>1</td><td>approved</td></tr>
-<tr><td>1</td><td>denied</td></tr>
-</table>
-`,
-  hint:"Conditional aggregation",
-  thinking:[
-    "Count approved claims",
-    "Divide by total claims",
-    "Group by emp_id"
-  ]
-}
+const patterns = [
+  "Total salary per department",
+  "Average salary per department",
+  "Top earner per department",
+  "Employees above department average",
+  "Approval rate per employee",
+  "Employees with no claims",
+  "Join employees with department name",
+  "Second highest salary per department",
+  "Count employees per department",
+  "Departments with high total salary"
 ];
 
-/* =========================
-   3. ENGINE (DO NOT TOUCH)
-========================= */
+function generateQuestions(){
+  const qs = [];
+  for(let i=0;i<75;i++){
+    const p = patterns[i % patterns.length];
 
-let index = 0;
-
-function renderSchema(){
-  let out = "";
-  for(let t in SCHEMA){
-    out += `<b>${t}</b>: (${SCHEMA[t].join(", ")})<br>`;
+    qs.push({
+      q: `Q${i+1}: Using Employees + Departments + Claims → ${p}`,
+      hint: "Think JOIN + aggregation + possible subquery",
+      think: [
+        "Identify required tables",
+        "Determine if JOIN is needed",
+        "Check if aggregation is required",
+        "Check if filtering or ranking is needed"
+      ],
+      dataset: renderTables()
+    });
   }
-  document.getElementById("schema").innerHTML = out;
+  return qs;
 }
 
+function renderTables(){
+  return `
+  <b>Employees</b><br>
+  <table>
+    <tr><th>id</th><th>name</th><th>dept_id</th><th>salary</th></tr>
+    ${TABLES.Employees.map(r=>
+      `<tr><td>${r.id}</td><td>${r.name}</td><td>${r.dept_id}</td><td>${r.salary}</td></tr>`
+    ).join("")}
+  </table>
+
+  <br>
+
+  <b>Departments</b><br>
+  <table>
+    <tr><th>dept_id</th><th>dept_name</th></tr>
+    ${TABLES.Departments.map(r=>
+      `<tr><td>${r.dept_id}</td><td>${r.dept_name}</td></tr>`
+    ).join("")}
+  </table>
+
+  <br>
+
+  <b>Claims</b><br>
+  <table>
+    <tr><th>claim_id</th><th>emp_id</th><th>status</th></tr>
+    ${TABLES.Claims.map(r=>
+      `<tr><td>${r.claim_id}</td><td>${r.emp_id}</td><td>${r.status}</td></tr>`
+    ).join("")}
+  </table>
+  `;
+}
+
+const QUESTIONS = generateQuestions();
+
+/////////////////////////////////////////////////////
+// 3. ENGINE STATE
+/////////////////////////////////////////////////////
+
+let i = 0;
+
 function render(){
-  const q = QUESTION_BANK[index];
+  const q = QUESTIONS[i];
 
   document.getElementById("progress").innerText =
-    `Question ${index+1} / ${QUESTION_BANK.length}`;
+    `Question ${i+1} / 75`;
 
-  document.getElementById("question").innerText = q.prompt;
+  document.getElementById("question").innerText = q.q;
   document.getElementById("dataset").innerHTML = q.dataset;
 
   document.getElementById("hintBox").innerText = "";
   document.getElementById("thinkBox").innerText = "";
 }
 
-function showHint(){
+function hint(){
   document.getElementById("hintBox").innerText =
-    QUESTION_BANK[index].hint;
+    QUESTIONS[i].hint;
 }
 
-function showThinking(){
+function think(){
   document.getElementById("thinkBox").innerText =
-    QUESTION_BANK[index].thinking.join("\n");
+    QUESTIONS[i].think.join("\n");
 }
 
 function next(){
-  if(index < QUESTION_BANK.length - 1){
-    index++;
+  if(i < QUESTIONS.length - 1){
+    i++;
     render();
   } else {
-    alert("End of questions");
+    alert("🎉 Completed all 75 questions!");
   }
 }
 
-renderSchema();
 render();
 
 </script>
