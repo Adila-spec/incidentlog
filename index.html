@@ -4,123 +4,124 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SQL Interview Garden 🌸</title>
-
 <style>
+*{box-sizing:border-box;margin:0;padding:0}
 body{
-  font-family:Arial;
+  font-family:Arial,sans-serif;
   background:linear-gradient(135deg,#ffe4ec,#e9d5ff,#fff1f2);
   padding:30px;
 }
-
-.container{max-width:900px;margin:auto;}
-
+.wrap{max-width:900px;margin:auto;}
 .card{
   background:white;
-  padding:16px;
+  padding:1.25rem;
   border-radius:14px;
   margin-bottom:15px;
   box-shadow:0 8px 20px rgba(0,0,0,0.08);
 }
-
-h1{text-align:center}
-
-table{
-  width:100%;
-  border-collapse:collapse;
-  margin-top:10px;
-}
-
-th,td{
-  border:1px solid #eee;
-  padding:6px;
-}
-
-th{background:#faf5ff}
-
+h1{text-align:center;margin-bottom:20px;font-size:24px;}
+.schema{font-size:13px;color:#6b7280;font-family:monospace;line-height:1.8;}
+.prog{font-size:13px;color:#6b7280;margin-bottom:8px;}
+.qtitle{font-size:16px;font-weight:600;color:#111827;margin-bottom:1rem;}
+table{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:10px;}
+th{background:#faf5ff;font-weight:600;color:#6b7280;padding:5px 8px;border:1px solid #eee;text-align:left;}
+td{padding:5px 8px;border:1px solid #eee;color:#111827;}
+.tbl-label{font-size:12px;font-weight:600;color:#6b7280;margin:8px 0 4px;}
 textarea{
-  width:100%;
-  min-height:120px;
-  background:#0f172a;
-  color:white;
-  border:none;
-  border-radius:10px;
-  padding:10px;
-  font-family:monospace;
+  width:100%;min-height:130px;
+  background:#0f172a;color:#e2e8f0;
+  border:1px solid #334155;border-radius:10px;
+  padding:10px;font-family:monospace;font-size:13px;
+  resize:vertical;margin:10px 0;
 }
-
+textarea:focus{outline:none;border-color:#a855f7;}
+.btns{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:1rem;}
 button{
-  padding:8px 12px;
-  border:none;
-  border-radius:8px;
-  margin:5px;
-  cursor:pointer;
+  padding:8px 14px;border:1px solid #d1d5db;
+  border-radius:8px;background:white;
+  color:#374151;cursor:pointer;font-size:13px;
+  font-family:Arial,sans-serif;
 }
-
-.pink{background:#f43f5e;color:white}
-.purple{background:#a855f7;color:white}
-.gray{background:#e5e7eb}
-
-.small{color:#6b7280;font-size:0.9rem}
+button:hover{background:#f9fafb;}
+button:active{transform:scale(0.98);}
+.btn-check{background:#534AB7;border-color:#534AB7;color:#fff;}
+.btn-check:hover{background:#3C3489;}
+.info-box{
+  padding:12px;border-radius:10px;
+  font-size:13px;line-height:1.7;
+  margin-top:8px;white-space:pre-wrap;
+}
+.hint-box{background:#EEEDFE;color:#3C3489;border:1px solid #AFA9EC;}
+.think-box{background:#E1F5EE;color:#085041;border:1px solid #5DCAA5;}
+.result-correct{background:#EAF3DE;color:#27500A;border:1px solid #97C459;}
+.result-wrong{background:#FCEBEB;color:#791F1F;border:1px solid #F09595;}
+.result-partial{background:#FAEEDA;color:#633806;border:1px solid #EF9F27;}
+.result-loading{background:#f3f4f6;color:#6b7280;border:1px solid #e5e7eb;}
+.answer-box{
+  background:#f8fafc;border:1px solid #e2e8f0;
+  border-radius:10px;padding:12px;font-size:13px;margin-top:8px;
+}
+.answer-box code{
+  font-family:monospace;font-size:12px;color:#0f172a;
+  display:block;white-space:pre-wrap;margin-top:6px;
+  background:#0f172a;color:#e2e8f0;
+  padding:10px;border-radius:6px;
+}
+.answer-label{font-size:12px;font-weight:600;color:#6b7280;margin-bottom:4px;}
 </style>
 </head>
-
 <body>
 
-<div class="container">
+<div class="wrap">
 
-<h1>🌸 SQL Interview Garden (75 Questions)</h1>
+  <h1>🌸 SQL Interview Garden (75 Questions)</h1>
 
-<div class="card">
-  <h3>📦 Schema (Fixed)</h3>
-  <div class="small">
-    Employees(emp_id, name, dept_id, salary)<br>
-    Departments(dept_id, dept_name)<br>
-    Claims(claim_id, emp_id, status)
-  </div>
-</div>
-
-<div class="card">
-
-  <div class="small" id="progress"></div>
-  <h3 id="question"></h3>
-
-  <div id="dataset"></div>
-
-  <textarea placeholder="Write SQL here..."></textarea>
-
-  <div>
-    <button class="pink" onclick="hint()">Hint</button>
-    <button class="purple" onclick="think()">Thinking</button>
-    <button class="gray" onclick="next()">Next</button>
+  <div class="card">
+    <div class="schema">
+      Employees(emp_id, name, dept_id, salary) &nbsp;|&nbsp;
+      Departments(dept_id, dept_name) &nbsp;|&nbsp;
+      Claims(claim_id, emp_id, status)
+    </div>
   </div>
 
-  <div id="hintBox"></div>
-  <div id="thinkBox"></div>
+  <div class="card">
+    <div class="prog" id="prog">Question 1 / 75</div>
+    <div class="qtitle" id="qtitle"></div>
+    <div id="dataset"></div>
 
-</div>
+    <textarea id="sqlinput" placeholder="Write your SQL here..."></textarea>
+
+    <div class="btns">
+      <button class="btn-check" onclick="checkAnswer()">✓ Check my answer</button>
+      <button onclick="showHint()">💡 Hint</button>
+      <button onclick="showThink()">🧠 Thinking steps</button>
+      <button onclick="showAnswer()">👁 Show answer</button>
+      <button onclick="nextQ()">Next →</button>
+    </div>
+
+    <div id="resultBox"></div>
+    <div id="hintBox"></div>
+    <div id="thinkBox"></div>
+    <div id="answerBox"></div>
+  </div>
 
 </div>
 
 <script>
-
-/////////////////////////////////////////////////////
-// 1. FIXED DATABASE (3 TABLES, 4 ROWS EACH)
-/////////////////////////////////////////////////////
-
 const TABLES = {
-  Employees: [
-    {id:1,name:"Alice",dept_id:10,salary:90000},
-    {id:2,name:"Bob",dept_id:10,salary:70000},
-    {id:3,name:"Carol",dept_id:20,salary:120000},
-    {id:4,name:"David",dept_id:30,salary:60000}
+  Employees:[
+    {emp_id:1,name:"Alice",dept_id:10,salary:90000},
+    {emp_id:2,name:"Bob",dept_id:10,salary:70000},
+    {emp_id:3,name:"Carol",dept_id:20,salary:120000},
+    {emp_id:4,name:"David",dept_id:30,salary:60000}
   ],
-  Departments: [
+  Departments:[
     {dept_id:10,dept_name:"Finance"},
     {dept_id:20,dept_name:"IT"},
     {dept_id:30,dept_name:"HR"},
     {dept_id:40,dept_name:"Ops"}
   ],
-  Claims: [
+  Claims:[
     {claim_id:1,emp_id:1,status:"approved"},
     {claim_id:2,emp_id:2,status:"denied"},
     {claim_id:3,emp_id:3,status:"approved"},
@@ -128,117 +129,190 @@ const TABLES = {
   ]
 };
 
-/////////////////////////////////////////////////////
-// 2. QUESTION ENGINE (75 GENERATED QUESTIONS)
-/////////////////////////////////////////////////////
-
-const patterns = [
-  "Total salary per department",
-  "Average salary per department",
-  "Top earner per department",
-  "Employees above department average",
-  "Approval rate per employee",
-  "Employees with no claims",
-  "Join employees with department name",
-  "Second highest salary per department",
-  "Count employees per department",
-  "Departments with high total salary"
+const QUESTIONS = [
+  {
+    q:"Total salary per department",
+    hint:"Use GROUP BY on dept_id and SUM(salary). JOIN with Departments to get the name.",
+    think:["JOIN Employees with Departments ON dept_id","Use SUM(salary)","GROUP BY dept_name"],
+    answer:"SELECT d.dept_name, SUM(e.salary) AS total_salary\nFROM Employees e\nJOIN Departments d ON e.dept_id = d.dept_id\nGROUP BY d.dept_name;"
+  },
+  {
+    q:"Average salary per department",
+    hint:"Same structure as total salary but use AVG() instead of SUM().",
+    think:["JOIN Employees with Departments","Use AVG(salary)","GROUP BY dept_name"],
+    answer:"SELECT d.dept_name, AVG(e.salary) AS avg_salary\nFROM Employees e\nJOIN Departments d ON e.dept_id = d.dept_id\nGROUP BY d.dept_name;"
+  },
+  {
+    q:"Top earner per department",
+    hint:"Use RANK() OVER (PARTITION BY dept_id ORDER BY salary DESC) and filter WHERE rank = 1.",
+    think:["Partition by department","Rank by salary descending","Filter WHERE rank = 1"],
+    answer:"SELECT dept_id, name, salary FROM (\n  SELECT emp_id, name, dept_id, salary,\n    RANK() OVER (PARTITION BY dept_id ORDER BY salary DESC) AS rnk\n  FROM Employees\n) t WHERE rnk = 1;"
+  },
+  {
+    q:"Employees who earn above their department's average salary",
+    hint:"Use a correlated subquery in WHERE: salary > (SELECT AVG(...) WHERE dept_id = e.dept_id).",
+    think:["Need the average per dept","Compare each employee's salary","Correlated subquery or CTE works"],
+    answer:"SELECT e.name, e.salary, e.dept_id\nFROM Employees e\nWHERE e.salary > (\n  SELECT AVG(salary) FROM Employees WHERE dept_id = e.dept_id\n);"
+  },
+  {
+    q:"Approval rate per employee (approved claims / total claims)",
+    hint:"Use COUNT with a CASE WHEN to count approved claims, then divide by COUNT(*).",
+    think:["JOIN Employees with Claims","SUM(CASE WHEN status='approved' THEN 1 ELSE 0 END)","Divide by COUNT(*)","GROUP BY employee"],
+    answer:"SELECT e.name,\n  SUM(CASE WHEN c.status='approved' THEN 1 ELSE 0 END) * 1.0 / COUNT(*) AS approval_rate\nFROM Employees e\nJOIN Claims c ON e.emp_id = c.emp_id\nGROUP BY e.name;"
+  },
+  {
+    q:"Employees with no claims",
+    hint:"Use LEFT JOIN Claims ON emp_id, then filter WHERE claim_id IS NULL.",
+    think:["LEFT JOIN keeps all employees","Rows with no match will have NULL claim_id","Filter WHERE c.claim_id IS NULL"],
+    answer:"SELECT e.name\nFROM Employees e\nLEFT JOIN Claims c ON e.emp_id = c.emp_id\nWHERE c.claim_id IS NULL;"
+  },
+  {
+    q:"List all employees with their department name",
+    hint:"Simple INNER JOIN between Employees and Departments on dept_id.",
+    think:["JOIN Employees with Departments ON dept_id","SELECT name and dept_name"],
+    answer:"SELECT e.name, d.dept_name\nFROM Employees e\nJOIN Departments d ON e.dept_id = d.dept_id;"
+  },
+  {
+    q:"Second highest salary per department",
+    hint:"Use RANK() OVER (PARTITION BY dept_id ORDER BY salary DESC) and filter WHERE rank = 2.",
+    think:["Window function RANK() partitioned by dept","Order salary DESC","Filter rank = 2"],
+    answer:"SELECT dept_id, name, salary FROM (\n  SELECT emp_id, name, dept_id, salary,\n    RANK() OVER (PARTITION BY dept_id ORDER BY salary DESC) AS rnk\n  FROM Employees\n) t WHERE rnk = 2;"
+  },
+  {
+    q:"Count of employees per department",
+    hint:"COUNT(*) with GROUP BY dept_id. JOIN to get the dept name.",
+    think:["JOIN Employees with Departments","COUNT(*) per group","GROUP BY dept_name"],
+    answer:"SELECT d.dept_name, COUNT(*) AS emp_count\nFROM Employees e\nJOIN Departments d ON e.dept_id = d.dept_id\nGROUP BY d.dept_name;"
+  },
+  {
+    q:"Departments where total salary exceeds 100,000",
+    hint:"SUM(salary) in HAVING clause after GROUP BY.",
+    think:["SUM(salary) per department","GROUP BY dept_id or dept_name","HAVING SUM(salary) > 100000"],
+    answer:"SELECT d.dept_name, SUM(e.salary) AS total\nFROM Employees e\nJOIN Departments d ON e.dept_id = d.dept_id\nGROUP BY d.dept_name\nHAVING SUM(e.salary) > 100000;"
+  }
 ];
 
-function generateQuestions(){
-  const qs = [];
-  for(let i=0;i<75;i++){
-    const p = patterns[i % patterns.length];
-
-    qs.push({
-      q: `Q${i+1}: Using Employees + Departments + Claims → ${p}`,
-      hint: "Think JOIN + aggregation + possible subquery",
-      think: [
-        "Identify required tables",
-        "Determine if JOIN is needed",
-        "Check if aggregation is required",
-        "Check if filtering or ranking is needed"
-      ],
-      dataset: renderTables()
-    });
-  }
-  return qs;
+function generateAll(){
+  const full = [];
+  for(let i=0;i<75;i++) full.push(QUESTIONS[i % QUESTIONS.length]);
+  return full;
 }
+
+const ALL_QS = generateAll();
+let idx = 0;
 
 function renderTables(){
-  return `
-  <b>Employees</b><br>
-  <table>
-    <tr><th>id</th><th>name</th><th>dept_id</th><th>salary</th></tr>
-    ${TABLES.Employees.map(r=>
-      `<tr><td>${r.id}</td><td>${r.name}</td><td>${r.dept_id}</td><td>${r.salary}</td></tr>`
-    ).join("")}
-  </table>
-
-  <br>
-
-  <b>Departments</b><br>
-  <table>
-    <tr><th>dept_id</th><th>dept_name</th></tr>
-    ${TABLES.Departments.map(r=>
-      `<tr><td>${r.dept_id}</td><td>${r.dept_name}</td></tr>`
-    ).join("")}
-  </table>
-
-  <br>
-
-  <b>Claims</b><br>
-  <table>
-    <tr><th>claim_id</th><th>emp_id</th><th>status</th></tr>
-    ${TABLES.Claims.map(r=>
-      `<tr><td>${r.claim_id}</td><td>${r.emp_id}</td><td>${r.status}</td></tr>`
-    ).join("")}
-  </table>
-  `;
+  function tbl(label, cols, rows){
+    return `<div class="tbl-label">${label}</div><table><tr>${cols.map(c=>`<th>${c}</th>`).join("")}</tr>${rows.map(r=>`<tr>${cols.map(c=>`<td>${r[c]??""}</td>`).join("")}</tr>`).join("")}</table>`;
+  }
+  return tbl("Employees",["emp_id","name","dept_id","salary"],TABLES.Employees)
+       + tbl("Departments",["dept_id","dept_name"],TABLES.Departments)
+       + tbl("Claims",["claim_id","emp_id","status"],TABLES.Claims);
 }
-
-const QUESTIONS = generateQuestions();
-
-/////////////////////////////////////////////////////
-// 3. ENGINE STATE
-/////////////////////////////////////////////////////
-
-let i = 0;
 
 function render(){
-  const q = QUESTIONS[i];
-
-  document.getElementById("progress").innerText =
-    `Question ${i+1} / 75`;
-
-  document.getElementById("question").innerText = q.q;
-  document.getElementById("dataset").innerHTML = q.dataset;
-
-  document.getElementById("hintBox").innerText = "";
-  document.getElementById("thinkBox").innerText = "";
+  const q = ALL_QS[idx];
+  document.getElementById("prog").textContent = `Question ${idx+1} / 75`;
+  document.getElementById("qtitle").textContent = `Q${idx+1}: ${q.q}`;
+  document.getElementById("dataset").innerHTML = renderTables();
+  document.getElementById("sqlinput").value = "";
+  document.getElementById("resultBox").innerHTML = "";
+  document.getElementById("hintBox").innerHTML = "";
+  document.getElementById("thinkBox").innerHTML = "";
+  document.getElementById("answerBox").innerHTML = "";
 }
 
-function hint(){
-  document.getElementById("hintBox").innerText =
-    QUESTIONS[i].hint;
+function showHint(){
+  const q = ALL_QS[idx];
+  document.getElementById("hintBox").innerHTML =
+    `<div class="info-box hint-box">💡 <strong>Hint:</strong> ${q.hint}</div>`;
 }
 
-function think(){
-  document.getElementById("thinkBox").innerText =
-    QUESTIONS[i].think.join("\n");
+function showThink(){
+  const q = ALL_QS[idx];
+  document.getElementById("thinkBox").innerHTML =
+    `<div class="info-box think-box">🧠 <strong>Thinking steps:</strong>\n${q.think.map((s,i)=>`${i+1}. ${s}`).join("\n")}</div>`;
 }
 
-function next(){
-  if(i < QUESTIONS.length - 1){
-    i++;
-    render();
-  } else {
-    alert("🎉 Completed all 75 questions!");
+function showAnswer(){
+  const q = ALL_QS[idx];
+  document.getElementById("answerBox").innerHTML =
+    `<div class="answer-box"><div class="answer-label">Model answer</div><code>${q.answer}</code></div>`;
+}
+
+async function checkAnswer(){
+  const userSQL = document.getElementById("sqlinput").value.trim();
+  if(!userSQL){
+    document.getElementById("resultBox").innerHTML =
+      `<div class="info-box result-loading">Please write some SQL before checking.</div>`;
+    return;
   }
+
+  const q = ALL_QS[idx];
+  document.getElementById("resultBox").innerHTML =
+    `<div class="info-box result-loading">⏳ Checking your answer...</div>`;
+
+  const schema = `Tables:
+- Employees(emp_id, name, dept_id, salary) with rows: Alice(dept 10, $90k), Bob(dept 10, $70k), Carol(dept 20, $120k), David(dept 30, $60k)
+- Departments(dept_id, dept_name): 10=Finance, 20=IT, 30=HR, 40=Ops
+- Claims(claim_id, emp_id, status): emp1=approved, emp2=denied, emp3=approved, emp4=approved`;
+
+  const prompt = `You are a SQL instructor reviewing a student's answer.
+
+Schema:
+${schema}
+
+Question: ${q.q}
+
+Model answer:
+${q.answer}
+
+Student's answer:
+${userSQL}
+
+Evaluate whether the student's SQL is correct or equivalent to the model answer. Respond in exactly this JSON format with no markdown:
+{
+  "verdict": "correct" or "incorrect" or "partial",
+  "explanation": "2-3 sentences explaining what's right, what's wrong, or what's missing. Be specific and encouraging."
+}`;
+
+  try {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-6",
+        max_tokens: 1000,
+        messages: [{ role: "user", content: prompt }]
+      })
+    });
+    const data = await res.json();
+    const text = data.content.filter(b => b.type === "text").map(b => b.text).join("");
+    let parsed;
+    try { parsed = JSON.parse(text.replace(/```json|```/g, "").trim()); }
+    catch { parsed = { verdict: "partial", explanation: text }; }
+
+    const v = parsed.verdict;
+    const isOk = v === "correct";
+    const isPart = v === "partial";
+    const cls = isOk ? "result-correct" : isPart ? "result-partial" : "result-wrong";
+    const icon = isOk ? "✅" : isPart ? "⚠️" : "❌";
+    const label = isOk ? "Correct!" : isPart ? "Partially correct" : "Incorrect";
+
+    document.getElementById("resultBox").innerHTML =
+      `<div class="info-box ${cls}">${icon} <strong>${label}</strong>\n\n${parsed.explanation}</div>`;
+  } catch(e) {
+    document.getElementById("resultBox").innerHTML =
+      `<div class="info-box result-loading">Could not check answer — please try again.</div>`;
+  }
+}
+
+function nextQ(){
+  if(idx < ALL_QS.length - 1){ idx++; render(); }
+  else{ alert("🎉 Completed all 75 questions!"); }
 }
 
 render();
-
 </script>
 
 </body>
